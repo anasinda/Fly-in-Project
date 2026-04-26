@@ -1,6 +1,7 @@
 from models.zone import Zone
 from utils.exceptions import ZoneNotFoundError
 
+
 class Connection:
     """Class that creates a connection object for our graph"""
     def __init__(self,
@@ -11,7 +12,6 @@ class Connection:
         self.current_usage: int = 0
         self.zone_b: Zone = zone_b
         self.zone_a: Zone = zone_a
-
 
     def can_accept_drone(self) -> bool:
         """Check if connection has capacity to add drones to the link"""

@@ -9,3 +9,19 @@ class ZoneNotFoundError(Exception):
     that doesn't exist in connection
     """
     pass
+
+
+class DuplicateZoneError(Exception):
+    """
+    Raised when finding a zone
+    in our zones dictionary with the same name
+    """
+    pass
+
+
+class DuplicateConnectionError(Exception):
+    """
+    Raised when finding a duplicate connection
+    when parsing file
+    """
+    pass
