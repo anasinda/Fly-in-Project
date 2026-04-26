@@ -1,5 +1,6 @@
 from enum import Enum
 
+
 class ZoneType(Enum):
     NORMAL = "normal"
     BLOCKED = "blocked"

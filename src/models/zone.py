@@ -1,5 +1,6 @@
-from zone_types import ZoneType
+from models.zone_types import ZoneType
 from utils.exceptions import BlockedZoneError
+
 
 class Zone:
     """Class that generates a zone object for our graph"""
@@ -30,12 +31,7 @@ class Zone:
         if self.zone_type == ZoneType.RESTRICTED:
             return 2
         elif self.zone_type == ZoneType.BLOCKED:
-            raise BlockedZoneError(f"Cannot enter blocked zone: {self.zone_name}")
+            raise BlockedZoneError("Cannot enter blocked zone:"
+                                   f"{self.zone_name}")
         else:
             return 1
-
-
-
-x = Zone()
-
-
