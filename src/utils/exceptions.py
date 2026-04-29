@@ -25,3 +25,10 @@ class DuplicateConnectionError(Exception):
     when parsing file
     """
     pass
+
+class DuplicateDroneCountLineError(Exception):
+    """
+    Raised when finding a duplicate drone count
+    line when parsing file
+    """
+    pass
