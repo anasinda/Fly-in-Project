@@ -32,3 +32,10 @@ class DuplicateDroneCountLineError(Exception):
     line when parsing file
     """
     pass
+
+class ZoneTypeError(Exception):
+    """
+    Raised when finding a wrong zone_type during
+    parsing
+    """
+    pass
