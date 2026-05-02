@@ -3,10 +3,10 @@ from models.zone import Zone
 
 class Drone:
     """Class that creates drone object"""
-    def __init__(self, drone_id: int) -> None:
+    def __init__(self, drone_id: int, current_zone: Zone) -> None:
         self.drone_id: int = drone_id
         self.full_drone_id: str = "D" + str(drone_id)
-        self.current_zone: Zone | None = None
+        self.current_zone: Zone = current_zone
         self.path: list[Zone] = []
 
     def move_to(self, zone: Zone) -> None:

@@ -1,3 +1,4 @@
+from models.drone import Drone
 from models.zone import Zone
 from models.connection import Connection
 from collections import defaultdict
@@ -13,7 +14,9 @@ class Graph:
         self.seen_connections: set[frozenset[str]] = set()
         self.start_zone: Zone | None = None
         self.end_zone: Zone | None = None
-        self.nb_drones: int = 0
+        self.nb_drones_check = False
+        self.nb_drones_count: int = 0
+        self.drones_list: list[Drone] = []
 
     def add_zone(self, zone: Zone) -> None:
         """

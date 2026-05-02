@@ -26,6 +26,7 @@ class DuplicateConnectionError(Exception):
     """
     pass
 
+
 class DuplicateDroneCountLineError(Exception):
     """
     Raised when finding a duplicate drone count
@@ -33,12 +34,14 @@ class DuplicateDroneCountLineError(Exception):
     """
     pass
 
+
 class DuplicateStartOrEndZoneError(Exception):
     """
     Raised when finding a duplicate start or end zone
     when parsing file
     """
     pass
+
 
 class ZoneTypeError(Exception):
     """
