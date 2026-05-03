@@ -18,9 +18,10 @@ class Zone:
         self.zone_type = zone_type
         self.zone_color = zone_color
         self.zone_capacity = zone_capacity
+        self.current_drones = 0
         self.is_start = False
         self.is_end = False
-        self.current_drones = 0
+        self.is_regular = False
 
     def can_accept_drone(self) -> bool:
         """Check if the zone has capacity for an additional drone."""

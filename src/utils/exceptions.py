@@ -49,3 +49,9 @@ class ZoneTypeError(Exception):
     parsing
     """
     pass
+
+class WrongMetadataFoundError(Exception):
+    """
+    Raised when finding a metadata that is not
+    supported during parsing
+    """

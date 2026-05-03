@@ -4,6 +4,7 @@ from models.connection import Connection
 from collections import defaultdict
 from utils.exceptions import DuplicateZoneError, DuplicateConnectionError
 from utils.exceptions import ZoneNotFoundError
+from sys import exit
 
 
 class Graph:
@@ -53,8 +54,7 @@ class Graph:
 
     def get_zone(self, name: str) -> Zone:
         """Retrieves zone from zones dictionary if found"""
-        print("This is zones", self.zones)
-        if name not in self.zones:
+        if name not in self.zones[name].zone_name:
             raise ZoneNotFoundError(f"Zone {name} not found in graph")
         return self.zones[name]
 
