@@ -44,9 +44,9 @@ class Parser:
         zone_type = zone_type.replace(":", "")
 
         # Check if start or end zone is a duplicate
-        if self.check_list[zone_type]:
-            raise exc.DuplicateStartOrEndZoneError(
-                f"Found duplicate {zone_type}")
+        # if self.check_list[zone_type]:
+        #     raise exc.DuplicateStartOrEndZoneError(
+        #         f"Found duplicate {zone_type}")
 
         # Check if x and y are digits
         if not x.isdigit() or not y.isdigit():
@@ -63,51 +63,51 @@ class Parser:
         # Split metadata and save it in a dictionary
         metadata = dict()
         if "[" in zone:
-            extradata = zone.replace("[", "")[1].replace("]", "")
+            extradata = zone.replace("[", "")[-1].replace("]", "")
             for data in extradata.split():
                 key, value = data.split("=")
                 metadata[key] = value
 
-                # Store metadata and set default values if not found
-                zone_color: str = metadata.get("color", None)
-                zone_capacity: str | Any = metadata.get("max_drones", "1")
+            # Store metadata and set default values if not found
+            zone_color: str = metadata.get("color", None)
+            zone_capacity: str | Any = metadata.get("max_drones", "1")
 
-                # Check if zone_capacity is a number
-                if not zone_capacity.isdigit():
-                    raise ValueError("zone capacity:"
+            # Check if zone_capacity is a number
+            if not zone_capacity.isdigit():
+                raise ValueError("zone capacity:"
                                      f"{zone_capacity} is not a number")
 
-                # Change zone capacity from an str to an int
-                zone_capacity = int(zone_capacity)
+            # Change zone capacity from an str to an int
+            zone_capacity = int(zone_capacity)
 
-                # Check zone_type exists
-                try:
-                    zone_type = ZoneType(metadata.get("zone", "normal"))
-                except ValueError:
-                    raise exc.ZoneTypeError(f"{self.line_number}:"
-                                            "invalid zone type"
-                                            f"'{metadata['zone']}'")
+            # Check zone_type exists
+            try:
+                zone_type = ZoneType(metadata.get("zone", "normal"))
+            except ValueError:
+                raise exc.ZoneTypeError(f"{self.line_number}:"
+                                        "invalid zone type"
+                                        f"'{metadata['zone']}'")
 
-                # Creating zone object
-                zone_obj = Zone(x, y,
-                                zone_name,
-                                zone_type,
-                                zone_color,
-                                zone_capacity)
+            # Creating zone object
+            zone_obj = Zone(x, y,
+                            zone_name,
+                            zone_type,
+                            zone_color,
+                            zone_capacity)
 
-                # Checking if zone is start or end
-                if zone_type == "start_hub":
-                    zone_obj.is_start = True
-                elif zone_type == "end_hub":
-                    zone_obj.is_end = True
-                # Adding zone to zones dictionray in our graph
-                graph.add_zone(zone_obj)
+            # Checking if zone is start or end
+            if zone_type == "start_hub":
+                zone_obj.is_start = True
+            elif zone_type == "end_hub":
+                zone_obj.is_end = True
+            # Adding zone to zones dictionray in our graph
+            graph.add_zone(zone_obj)
 
     def connection_parser(self,
                           connection_line: str,
                           graph: Graph) -> None:
         # Split line, only take two parts, remove ':', split zone connections
-        zones = connection_line.split("", 1)[1]
+        zones = connection_line.split(" ", 1)[1]
         #  connection.replace(":", "")
         zone_a, zone_b = zones.split('-')
 
@@ -119,6 +119,8 @@ class Parser:
             metadata[key] = value
 
         # Create connection objct
+        print("THis is zone a", zone_a)
+        print("THis is zone b", zone_b)
         connection_obj = Connection(graph.get_zone(zone_a),
                                     graph.get_zone(zone_b),
                                     metadata["max_link_capacity"])
@@ -149,12 +151,12 @@ class Parser:
                     self.line_number += 1
                     self.connection_parser(line, self.graph)
 
-            # Check if we have start zone to create
-            # drones and set their start zone
-            if self.graph.start_zone.is_start:
-                start_zone = self.graph.start_zone.is_start
-                drone_count = self.graph.nb_drones_count
-                # Create a list of drones and add them to self.graph
-                for drone_id in range(1, (drone_count + 1)):
-                    drone_obj = Drone(drone_id, start_zone)
-                    self.graph.drones_list.append(drone_obj)
+            # # Check if we have start zone to create
+            # # drones and set their start zone
+            # if self.graph.start_zone.is_start:
+            #     start_zone = self.graph.start_zone.is_start
+            #     drone_count = self.graph.nb_drones_count
+            #     # Create a list of drones and add them to self.graph
+            #     for drone_id in range(1, (drone_count + 1)):
+            #         drone_obj = Drone(drone_id, start_zone)
+            #         self.graph.drones_list.append(drone_obj)
