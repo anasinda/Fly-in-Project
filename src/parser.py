@@ -1,12 +1,8 @@
 from models.connection import Connection
 from models.drone import Drone
 from models.graph import Graph
-from models.zone_types import ZoneType
-from models.zone import Zone
 from models.error_checker import ErrorChecker
 import utils.exceptions as exc
-from models.graph_keys import GraphKeys
-from typing import Any
 
 
 class Parser:
@@ -22,7 +18,7 @@ class Parser:
         nb_drones = nb_drones.replace(":", "")
 
         # Error checker for nb_drone_parser
-        self.error_checker.nb_drones_error_checker(self.line_number,
+        self.error_checker.nb_drones_validator(self.line_number,
                                                    nb_drones,
                                                    drone_count,
                                                    graph)
@@ -34,58 +30,22 @@ class Parser:
         zone_placeholder = zone_placeholder.replace(":", "")
 
         # Error checker for zone_parser
-        metadata: dict[str, str] = self.error_checker.zone_error_checker(zone, graph, x, y)
-        # Split metadata and save it in a dictionary
-        metadata: dict[str, str] = dict()
-        if "[" in zone:
-            extradata = zone.split("[")[-1].replace("]", "")
-            for data in extradata.split():
-                key, value = data.split("=")
-                metadata[key] = value
+        zone_obj = self.error_checker.zone_data_validator(x, y,
+                                                          zone_name,
+                                                          zone,
+                                                          self.line_number
+                                                          )
 
-            #Error checker for metadata in zone
-            self.error_checker.zone_metadata_error_checker(metadata)
+        # Checking if zone is start or end
+        if zone_placeholder.strip() == "start_hub":
+            zone_obj.is_start = True
+        elif zone_placeholder.strip() == "end_hub":
+            zone_obj.is_end = True
+        else:
+            zone_obj.is_regular = True
 
-            # Store metadata and set default values if not found
-            zone_color: str = metadata.get("color", None)
-            zone_capacity: str | Any = metadata.get("max_drones", "1")
-
-            # Check if zone_capacity is a number
-            if not zone_capacity.isdigit():
-                raise ValueError("zone capacity:"
-                                     f"{zone_capacity} is not a number")
-
-            # Change zone capacity from an str to an int
-            zone_capacity = int(zone_capacity)
-
-            # Remove whitespaces from names
-            zone_placeholder = zone_placeholder.strip()
-            zone_name = zone_name.strip()
-
-            # Check zone_type exists
-            try:
-                zone_type = ZoneType(metadata.get("zone", "normal"))
-            except (ValueError, exc.ZoneTypeError) as type_error:
-                print(f"File line number: {self.line_number}\n")
-                print(f"Error type:", exc.ZoneTypeError())
-                raise type_error
-            # Creating zone object
-            zone_obj = Zone(x, y,
-                            zone_name,
-                            zone_type,
-                            zone_color,
-                            zone_capacity)
-
-            # Checking if zone is start or end
-            if zone_placeholder == "start_hub":
-                zone_obj.is_start = True
-            elif zone_placeholder == "end_hub":
-                zone_obj.is_end = True
-            else:
-                zone_obj.is_regular = True
-
-            # Adding zone to zones dictionray in our graph
-            graph.add_zone(zone_obj)
+        # Adding zone to zones dictionray in our graph
+        graph.add_zone(zone_obj)
 
     def connection_parser(self,
                           connection_line: str,
