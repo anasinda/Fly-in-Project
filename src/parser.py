@@ -21,11 +21,10 @@ class Parser:
         nb_drones = nb_drones.replace(":", "")
 
         # Error checker for nb_drone_parser
-        self.error_checker.nb_drones_error_checker(nb_drones,
+        self.error_checker.nb_drones_error_checker(self.line_number,
+                                                   nb_drones,
                                                    drone_count,
-                                                   graph.nb_drones_check,
-                                                   graph.nb_drones_count)
-        print("sadadsadaddsadsadsadsa")
+                                                   graph)
 
     def zone_parser(self, zone: str, graph: Graph) -> None:
         # Split line, and remove ":" from zone_ype
@@ -33,22 +32,9 @@ class Parser:
         zone_placeholder, zone_name, x, y = main_data.split()
         zone_placeholder = zone_placeholder.replace(":", "")
 
-
-        # Check if x and y are digits
-        if not x.isdigit() or not y.isdigit():
-            raise ValueError(f"{x} or {y} is not  number")
-
-
-        # Turn x and y charachter values to integer values
-        x, y = map(int, [x, y])
-
-        # Check if x and y are negative
-        if x < 0 or y < 0:
-            raise ValueError(f"x position: {x}"
-                             f"or y position: {y} not acceptable")
-
+        self.error_checker.zone_error_checker(zone, graph, x, y)
         # Split metadata and save it in a dictionary
-        metadata = dict()
+        metadata: dict[str, str] = dict()
         if "[" in zone:
             extradata = zone.split("[")[-1].replace("]", "")
             for data in extradata.split():
@@ -74,11 +60,10 @@ class Parser:
             # Check zone_type exists
             try:
                 zone_type = ZoneType(metadata.get("zone", "normal"))
-            except ValueError as type_error:
-                raise type_error(f"line number: {self.line_number}\n"
-                                 "Invalid zone type:"
-                                 f"'{metadata["zone"]}'\n{type_error}")
-
+            except (ValueError, exc.ZoneTypeError) as type_error:
+                print(f"File line number: {self.line_number}\n")
+                print(f"Error type:", exc.ZoneTypeError())
+                raise type_error
             # Creating zone object
             zone_obj = Zone(x, y,
                             zone_name,
@@ -159,6 +144,6 @@ class Parser:
                         drone_obj = Drone(drone_id, start_zone)
                         self.graph.drones_list.append(drone_obj)
             except Exception as error:
-                print(f"caught error during parsing: {error}")
+                print(f"Error info: {error}")
                 exit(1)
 

@@ -1,29 +1,50 @@
 from sys import exit
 import utils.exceptions as exc
+from models.graph import Graph
 
 
 class ErrorChecker:
     def nb_drones_error_checker(self,
+                                line_number: int,
                                 nb_drones: str,
                                 drone_count: int,
-                                graph_drones_check: bool,
-                                graph_drones_count: int) -> None:
+                                graph: Graph) -> None:
 
-        # Check if value is a number
+        # Check if value is a number, turn to integer
+        # Check if less then or equal to zero
         if not drone_count.isdigit():
             raise ValueError(f"{drone_count} is not a number")
-
-        # Turn string number to integer number and check if negative or zero
-        drone_count = int(drone_count)
-        if drone_count <= 0:
-            raise ValueError(f"Drone count {drone_count} not acceptable")
+        else:
+            drone_count = int(drone_count)
+            if drone_count <= 0:
+                raise ValueError(f"Drone count {drone_count} not acceptable")
 
         # Check if we already have nb_drones
-        if graph_drones_check:
+        # Else set as found and register it
+        if graph.nb_drones_check:
             raise exc.DuplicateDroneCountLineError("Found duplicate"
                                                    f"{nb_drones} at line"
-                                                   f"{self.line_number}")
+                                                   f"{line_number}")
+        else:
+            graph.nb_drones_check = True
+            graph.nb_drones_count = drone_count
 
-        # Set nb_drones as found and register it
-        graph_drones_check = True
-        graph_drones_count = drone_count
+    def zone_error_checker(self,
+                           zone: str,
+                           graph: Graph,
+                           x: str,
+                           y: str) -> None:
+
+        # Check if x and y are digits, turn to integers
+        # Check if less then zero
+        if not x.isdigit() or not y.isdigit():
+            raise ValueError(f"{x} or {y} is not  number")
+        else:
+            x, y = map(int, [x, y])
+            if x < 0 or y < 0:
+                raise ValueError(f"x position: {x}"
+                                 f"or y position: {y} not acceptable")
+
+
+    def zone_metadata_error_checker(self, metadata: dict[str, str]) -> None:
+        if metadata[]
