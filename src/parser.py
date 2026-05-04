@@ -5,6 +5,7 @@ from models.zone_types import ZoneType
 from models.zone import Zone
 from models.error_checker import ErrorChecker
 import utils.exceptions as exc
+from models.graph_keys import GraphKeys
 from typing import Any
 
 
@@ -32,7 +33,8 @@ class Parser:
         zone_placeholder, zone_name, x, y = main_data.split()
         zone_placeholder = zone_placeholder.replace(":", "")
 
-        self.error_checker.zone_error_checker(zone, graph, x, y)
+        # Error checker for zone_parser
+        metadata: dict[str, str] = self.error_checker.zone_error_checker(zone, graph, x, y)
         # Split metadata and save it in a dictionary
         metadata: dict[str, str] = dict()
         if "[" in zone:
@@ -40,6 +42,9 @@ class Parser:
             for data in extradata.split():
                 key, value = data.split("=")
                 metadata[key] = value
+
+            #Error checker for metadata in zone
+            self.error_checker.zone_metadata_error_checker(metadata)
 
             # Store metadata and set default values if not found
             zone_color: str = metadata.get("color", None)

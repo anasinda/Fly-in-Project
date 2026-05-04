@@ -1,6 +1,7 @@
 from sys import exit
 import utils.exceptions as exc
 from models.graph import Graph
+from models.graph_keys import GraphKeys
 
 
 class ErrorChecker:
@@ -33,7 +34,7 @@ class ErrorChecker:
                            zone: str,
                            graph: Graph,
                            x: str,
-                           y: str) -> None:
+                           y: str) -> :
 
         # Check if x and y are digits, turn to integers
         # Check if less then zero
@@ -47,4 +48,10 @@ class ErrorChecker:
 
 
     def zone_metadata_error_checker(self, metadata: dict[str, str]) -> None:
-        if metadata[]
+
+        for data in metadata:
+            try:
+                GraphKeys(data)
+            except ValueError as key_error:
+                print(f"")
+
