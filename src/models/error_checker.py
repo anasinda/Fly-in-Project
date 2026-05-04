@@ -10,7 +10,7 @@ class ErrorChecker:
     def nb_drones_validator(self,
                                 line_number: int,
                                 nb_drones: str,
-                                drone_count: int,
+                                drone_count: str,
                                 graph: Graph) -> None:
 
         # Check if value is a number, turn to integer
@@ -36,11 +36,10 @@ class ErrorChecker:
                             x: str,
                             y: str,
                             zone_name: str,
-                            zone: str,
-                            line_number: int) -> Zone:
+                            zone: str) -> Zone:
 
         # Check if x & y are digits, turn to ints
-        if not x.isdigit() or not y.isdigit():
+        if not x.lstrip("-").isdigit() or not y.lstrip("-").isdigit():
             raise ValueError(f"{x} or {y} is not  number")
         else:
             x, y = map(int, [x, y])
@@ -58,23 +57,20 @@ class ErrorChecker:
                         value = int(value)
                     metadata[key] = value
                 except ValueError as key_error:
-                    print(f"File line number: {line_number}\n")
-                    raise ("Error type: ", key_error)
+                    raise key_error
 
             try:
                 if GraphKeys.MAX_DRONES in metadata:
-                    if not metadata[GraphKeys.MAX_DRONES].isdigit:
+                    if not isinstance(metadata[GraphKeys.MAX_DRONES], int):
                         raise ValueError("max_drones:"
                                         f"{metadata[GraphKeys.MAX_DRONES]}"
                                         "is not a number")
             except ValueError as max_drone_type_error:
-                print(f"File line number: {line_number}\n")
                 raise max_drone_type_error
 
             try:
                 zone_type: str = ZoneType(metadata.get(GraphKeys.ZONE, "normal")).value
             except ValueError as zone_type_error:
-                print(f"File line number: {line_number}\n")
                 raise zone_type_error
 
             zone_color: str = metadata.get(GraphKeys.COLOR, None)
@@ -87,6 +83,18 @@ class ErrorChecker:
             return zone_obj
 
 
-    def connection_validator(self, connection_line: str, graph: Graph) -> None:
-        pass
+    def connection_validator(self, connection_line: str) -> dict[str, str]:
+
+        metadata: dict[str, str] = dict()
+        if "[" in connection_line:
+            extradata = connection_line.split("[")[-1].replace("]", "")
+            key, value = extradata.split("=")
+            try:
+                key = GraphKeys(key)
+                if not value.strip().isdigit():
+                    raise ValueError(f"{value} not a number")
+            except ValueError as key_error:
+                raise key_error
+            metadata[key] = int(value)
+        return metadata
 
