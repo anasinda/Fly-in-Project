@@ -74,18 +74,19 @@ class Parser:
             zone_check = ["start_hub:", "end_hub:", "hub:"]
             try:
                 for line in map_file:
+                    stripped_line = line.strip()
                     # Skip if line is empthy or starts with '# '
-                    if not line or line.startswith("# "):
+                    if not stripped_line or stripped_line.startswith("#"):
                         continue
                     # Uses nb_drones_parser
-                    elif "nb_drones:" in line:
-                        self.nb_drones_parser(line, self.graph)
+                    elif "nb_drones:" in stripped_line:
+                        self.nb_drones_parser(stripped_line, self.graph)
                     # Uses zone_parser if zone in zone_check
-                    elif any(zone in line for zone in zone_check):
-                        self.zone_parser(line, self.graph)
+                    elif any(zone in stripped_line for zone in zone_check):
+                        self.zone_parser(stripped_line, self.graph)
                     # Uses connection parser
-                    elif "connection:" in line:
-                        self.connection_parser(line, self.graph)
+                    elif "connection:" in stripped_line:
+                        self.connection_parser(stripped_line, self.graph)
                     self.line_number += 1
 
                 # Check if we have start zone to create

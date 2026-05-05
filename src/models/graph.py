@@ -56,7 +56,7 @@ class Graph:
 
     def get_zone(self, name: str) -> Zone:
         """Retrieves zone from zones dictionary if found"""
-        if name not in self.zones[name].zone_name:
+        if name not in self.zones:
             raise ZoneNotFoundError(f"Zone {name} not found in graph")
         return self.zones[name]
 
