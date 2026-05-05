@@ -3,6 +3,7 @@ from models.zone import Zone
 
 class Drone:
     """Class that creates drone object"""
+
     def __init__(self, drone_id: int, current_zone: Zone) -> None:
         self.drone_id: int = drone_id
         self.full_drone_id: str = "D" + str(drone_id)

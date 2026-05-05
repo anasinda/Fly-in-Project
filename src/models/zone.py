@@ -4,13 +4,16 @@ from utils.exceptions import BlockedZoneError
 
 class Zone:
     """Class that generates a zone object for our graph"""
-    def __init__(self,
-                 x: int,
-                 y: int,
-                 zone_name: str,
-                 zone_type: ZoneType = ZoneType.NORMAL,
-                 zone_color: str | None = None,
-                 zone_capacity: int = 1):
+
+    def __init__(
+        self,
+        x: int,
+        y: int,
+        zone_name: str,
+        zone_type: str = ZoneType.NORMAL.value,
+        zone_color: str | None = None,
+        zone_capacity: int = 1,
+    ):
 
         self.x = x
         self.y = y

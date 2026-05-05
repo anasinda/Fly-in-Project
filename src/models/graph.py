@@ -4,11 +4,11 @@ from models.connection import Connection
 from collections import defaultdict
 from utils.exceptions import DuplicateZoneError, DuplicateConnectionError
 from utils.exceptions import ZoneNotFoundError
-from sys import exit
 
 
 class Graph:
     """Class that creates the graph representaton of the map"""
+
     def __init__(self) -> None:
         self.zones: dict[str, Zone] = {}
         self.adjacency: defaultdict[str, list[Connection]] = defaultdict(list)
@@ -25,8 +25,9 @@ class Graph:
         Also checks for duplicate zones
         """
         if zone.zone_name in self.zones:
-            raise DuplicateZoneError("Found duplicate zone"
-                                     f"{zone.zone_name} in file...")
+            raise DuplicateZoneError(
+                "Found duplicate zone" f"{zone.zone_name} in file..."
+            )
 
         if zone.is_start:
             self.start_zone = zone
@@ -46,8 +47,9 @@ class Graph:
         })
 
         if key in self.seen_connections:
-            raise DuplicateConnectionError("Found duplicate connection"
-                                           f"{key} in file...")
+            raise DuplicateConnectionError(
+                "Found duplicate connection" f"{key} in file..."
+            )
         self.seen_connections.add(key)
         self.adjacency[connection.zone_a.zone_name].append(connection)
         self.adjacency[connection.zone_b.zone_name].append(connection)

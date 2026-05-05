@@ -4,6 +4,7 @@ from utils.exceptions import ZoneNotFoundError
 
 class Connection:
     """Class that creates a connection object for our graph"""
+
     def __init__(self,
                  zone_a: Zone,
                  zone_b: Zone,
@@ -25,11 +26,12 @@ class Connection:
         """Grab other corresponding zone"""
         zone_getter = {
             self.zone_a.zone_name: self.zone_b,
-            self.zone_b.zone_name: self.zone_a
+            self.zone_b.zone_name: self.zone_a,
         }
         if zone_get not in zone_getter:
-            raise ZoneNotFoundError(f"Zone '{zone_get}'"
-                                    f"is not part of this connection: {self}")
+            raise ZoneNotFoundError(
+                f"Zone '{zone_get}'" f"is not part of this connection: {self}"
+            )
         return zone_getter[zone_get]
 
     def drone_entry(self) -> None:

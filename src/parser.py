@@ -7,7 +7,7 @@ from models.graph_keys import GraphKeys
 
 
 class Parser:
-    def __init__(self):
+    def __init__(self) -> None:
         self.graph: Graph = Graph()
         self.line_number: int = 0
         self.error_checker = ErrorChecker()
@@ -19,10 +19,9 @@ class Parser:
         nb_drones = nb_drones.replace(":", "")
 
         # Error checker for nb_drone_parser
-        self.error_checker.nb_drones_validator(self.line_number,
-                                                   nb_drones,
-                                                   drone_count,
-                                                   graph)
+        self.error_checker.nb_drones_validator(
+            self.line_number, nb_drones, drone_count, graph
+        )
 
     def zone_parser(self, zone: str, graph: Graph) -> None:
         # Split line, and remove ":" from zone_ype
@@ -31,12 +30,13 @@ class Parser:
         zone_placeholder = zone_placeholder.replace(":", "")
 
         # Error checker for zone_parser
-        zone_obj = self.error_checker.zone_data_validator(x, y,
+        zone_obj = self.error_checker.zone_data_validator(x,
+                                                          y,
                                                           zone_name,
                                                           zone)
 
         # Checking if zone is start, end or regualr
-        zone_catagory: dict[str, bool] = {
+        zone_catagory: dict[str, str] = {
             "start_hub": "is_start",
             "end_hub": "is_end",
         }
@@ -46,23 +46,27 @@ class Parser:
 
         graph.add_zone(zone_obj)
 
-    def connection_parser(self,
-                          connection_line: str,
-                          graph: Graph) -> None:
+    def connection_parser(self, connection_line: str, graph: Graph) -> None:
         # Split line, take zone connections, remove ':'
         # If metadata is found, save it in a dictionary for later use
         # Create connection object
-        zones = connection_line.split()[1]
-        zone_a, zone_b = zones.split('-')
+        try:
+            zones = connection_line.split()[1]
+        except IndexError as no_connection:
+            print("Error: no connection found")
+            raise no_connection
+        zone_a, zone_b = zones.split("-")
         metadata = self.error_checker.connection_validator(connection_line)
-        connection_obj = Connection(graph.get_zone(zone_a.strip()),
-                                    graph.get_zone(zone_b.strip()),
-                                    metadata.get(GraphKeys.MAX_LINK_CAPACITY, 1))
+        connection_obj = Connection(
+            graph.get_zone(zone_a.strip()),
+            graph.get_zone(zone_b.strip()),
+            metadata.get(GraphKeys.MAX_LINK_CAPACITY, 1),
+        )
 
         # Add connection object to graph
         graph.add_connection(connection_obj)
 
-    def main_parser(self, file_path: str):
+    def main_parser(self, file_path: str) -> None:
         with open(file_path, "r") as map_file:
             # Creating graph
 
@@ -86,8 +90,10 @@ class Parser:
 
                 # Check if we have start zone to create
                 # drones and set their start zone
+                if self.graph.start_zone is None:
+                    raise exc.ZoneNotFoundError("Start zone not found")
                 if self.graph.start_zone.is_start:
-                    start_zone = self.graph.start_zone.is_start
+                    start_zone = self.graph.start_zone
                     drone_count = self.graph.nb_drones_count
                     # Create a list of drones and add them to self.graph
                     for drone_id in range(1, (drone_count + 1)):
@@ -98,4 +104,3 @@ class Parser:
                 print(f"Error type: {type(error).__name__}")
                 print(f"Error info: {error}")
                 exit(1)
-

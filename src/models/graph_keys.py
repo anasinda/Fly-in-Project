@@ -6,6 +6,3 @@ class GraphKeys(Enum):
     COLOR = "color"
     MAX_DRONES = "max_drones"
     MAX_LINK_CAPACITY = "max_link_capacity"
-
-
-
