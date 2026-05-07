@@ -1,5 +1,5 @@
-from models.zone import Zone
-from utils.exceptions import ZoneNotFoundError
+from src.models.zone import Zone
+from src.utils.exceptions import ZoneNotFoundError
 
 
 class Connection:

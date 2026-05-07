@@ -1,5 +1,5 @@
-from models.zone_types import ZoneType
-from utils.exceptions import BlockedZoneError
+from src.models.zone_types import ZoneType
+from src.utils.exceptions import BlockedZoneError
 
 
 class Zone:

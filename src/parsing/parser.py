@@ -1,9 +1,9 @@
-from models.connection import Connection
-from models.drone import Drone
-from models.graph import Graph
-from models.error_checker import ErrorChecker
-import utils.exceptions as exc
-from models.graph_keys import GraphKeys
+from src.models.connection import Connection
+from src.models.drone import Drone
+from src.models.graph import Graph
+from src.parsing.error_checker import ErrorChecker
+import src.utils.exceptions as exc
+from src.models.graph_keys import GraphKeys
 
 
 class Parser:
