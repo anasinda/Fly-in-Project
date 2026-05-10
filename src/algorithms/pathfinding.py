@@ -1,6 +1,8 @@
 from src.models.drone import Drone
 from src.models.zone import Zone
 from src.models.graph import Graph
+from src.models.zone_types import ZoneType
+
 
 class Pathfinder:
     def __init__(self, graph: Graph):
@@ -16,5 +18,7 @@ class Pathfinder:
             else:
                 dist_list[name] = float('inf')
 
-        for key, value in dist_list.items():
-            print(f"This is key: {key} --- This is value: {value}")
+        # for key, value in dist_list.items():
+        #     print(f"This is key: {key} --- This is value: {value}")
+
+
