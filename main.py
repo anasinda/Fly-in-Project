@@ -21,4 +21,4 @@ for name, connection in parser.graph.adjacency.items():
 print("")
 print("")
 finder = Pathfinder(parser.graph)
-finder.run_dijkstra_algo()
+finder.run_dijkstra_algo(parser.graph.zones['start'], parser.graph.zones['goal'])
