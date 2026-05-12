@@ -40,10 +40,11 @@
 # print(final_path)
 # print(dist_list)
 
-
-
 # class Solution:
-#     def shortestPath(self, n: int, edges: list[list[int]], src: int) -> dict[int, int]:
+#     def shortestPath(self,
+#                      n: int,
+#                      edges: list[list[int]],
+#                      src: int) -> dict[int, int]:
 #         dist_list = {}
 #         pq = []
 #         adj_list = {}

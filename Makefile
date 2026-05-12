@@ -4,7 +4,9 @@ install:
 		.venv/bin/pip install -r requirements.txt
 
 clean:
-		rm -rf __pycache__ */__pycache__ *.pyc .mypy_cache
+		find . -type d -name ".mypy_cache" -exec rm -rf {} +
+		find . -type d -name "__pycache__" -exec rm -rf {} +
+		find . -type f -name "*.pyc" -delete
 
 delete_venv:
 		rm -rf .venv

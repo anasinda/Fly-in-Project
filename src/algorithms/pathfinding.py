@@ -25,7 +25,7 @@ class Pathfinder:
             zone_name: None for zone_name in self.graph.zones.keys()
         }
         queue: list[tuple[float, str]] = [(dist_list[start.zone_name],
-                                         start.zone_name)]
+                                           start.zone_name)]
         path: list[Zone] = []
 
         while queue:
