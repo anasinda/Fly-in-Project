@@ -77,21 +77,23 @@ class ErrorChecker:
             raise zone_type_error
 
         zone_color_value = metadata.get(GraphKeys.COLOR, None)
-        zone_color = (
-            zone_color_value.strip()
-            if isinstance(zone_color_value, str)
-            else None
-        )
+        if isinstance(zone_color_value, str):
+            zone_color = zone_color_value.strip()
+        else:
+            zone_color = None
+
         zone_capacity_value = metadata.get(GraphKeys.MAX_DRONES, 1)
         if not isinstance(zone_capacity_value, int):
             raise ValueError("max_drones must be an integer")
         zone_capacity = zone_capacity_value
-        zone_obj = Zone(int_x,
-                        int_y,
-                        zone_name.strip(),
-                        zone_type,
-                        zone_color,
-                        zone_capacity)
+        zone_obj = Zone(
+            int_x,
+            int_y,
+            zone_name.strip(),
+            zone_type,
+            zone_color,
+            zone_capacity
+        )
         return zone_obj
 
     def connection_validator(self,

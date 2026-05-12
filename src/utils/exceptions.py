@@ -1,10 +1,10 @@
-class BlockedZoneError(BaseException):
+class BlockedZoneError(Exception):
     """Raised when a drone attempts to enter a blocked zone."""
 
     pass
 
 
-class ZoneNotFoundError(BaseException):
+class ZoneNotFoundError(Exception):
     """
     Raised when trying to retrieve a zone
     that doesn't exist in connection
@@ -13,7 +13,7 @@ class ZoneNotFoundError(BaseException):
     pass
 
 
-class DuplicateZoneError(BaseException):
+class DuplicateZoneError(Exception):
     """
     Raised when finding a zone
     in our zones dictionary with the same name
@@ -22,7 +22,7 @@ class DuplicateZoneError(BaseException):
     pass
 
 
-class DuplicateConnectionError(BaseException):
+class DuplicateConnectionError(Exception):
     """
     Raised when finding a duplicate connection
     when parsing file
@@ -31,7 +31,7 @@ class DuplicateConnectionError(BaseException):
     pass
 
 
-class DuplicateDroneCountLineError(BaseException):
+class DuplicateDroneCountLineError(Exception):
     """
     Raised when finding a duplicate drone count
     line when parsing file
@@ -40,7 +40,7 @@ class DuplicateDroneCountLineError(BaseException):
     pass
 
 
-class DuplicateStartOrEndZoneError(BaseException):
+class DuplicateStartOrEndZoneError(Exception):
     """
     Raised when finding a duplicate start or end zone
     when parsing file
@@ -63,3 +63,14 @@ class GraphKeyError(Exception):
     Raised when finding a metadata that is not
     supported during parsing
     """
+
+    pass
+
+
+class NoPathFoundError(Exception):
+    """
+    Raised when not checking if end in dist_list
+    if still infinity
+    """
+
+    pass

@@ -14,13 +14,9 @@ class Connection:
         self.zone_b: Zone = zone_b
         self.zone_a: Zone = zone_a
 
-    def can_accept_drone(self) -> bool:
+    def check_link_usage(self) -> bool:
         """Check if connection has capacity to add drones to the link"""
         return self.current_usage < self.max_link_capacity
-
-    def has_zone(self, zone_check: str) -> bool:
-        """Check if sent zone is inside this connection"""
-        return zone_check in {self.zone_a.zone_name, self.zone_b.zone_name}
 
     def other_zone(self, zone_get: str) -> Zone:
         """Grab other corresponding zone"""

@@ -9,6 +9,7 @@ class Drone:
         self.full_drone_id: str = "D" + str(drone_id)
         self.current_zone: Zone = current_zone
         self.path: list[Zone] = []
+        self.path_index: int = 0
 
     def move_to(self, zone: Zone) -> None:
         """Moves drone from one zone to the next"""
@@ -19,6 +20,14 @@ class Drone:
     def has_arrived(self, end_zone: Zone) -> bool:
         """Checks if drone reached goal/end_zone"""
         return self.current_zone == end_zone
+
+    def next_zone_in_path(self) -> Zone | None:
+        """
+        Returns the next zone in the path, or None if at end of path.
+        """
+        if self.path_index + 1 < len(self.path):
+            return self.path[self.path_index + 1]
+        return None
 
     def __str__(self) -> str:
         """Prints drone id"""

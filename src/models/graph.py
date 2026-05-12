@@ -44,7 +44,7 @@ class Graph:
         key = frozenset({
             connection.zone_a.zone_name,
             connection.zone_b.zone_name
-        })
+            })
 
         if key in self.seen_connections:
             raise DuplicateConnectionError(
@@ -60,6 +60,6 @@ class Graph:
             raise ZoneNotFoundError(f"Zone {name} not found in graph")
         return self.zones[name]
 
-    def get_connections_for_zone(self, name: str) -> list[Connection]:
+    def get_zone_connections(self, name: str) -> list[Connection]:
         """Retrieves connection from adjacency list"""
         return self.adjacency[name]

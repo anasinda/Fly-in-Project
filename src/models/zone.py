@@ -28,6 +28,8 @@ class Zone:
 
     def can_accept_drone(self) -> bool:
         """Check if the zone has capacity for an additional drone."""
+        if self.is_start or self.is_end:
+            return True
         return self.current_drones < self.zone_capacity
 
     def zone_move_cost(self) -> int:
