@@ -3,6 +3,7 @@ from src.algorithms.pathfinding import Pathfinder
 from src.models.graph import Graph
 from src.models.zone import Zone
 from src.models.drone import Drone
+from src.algorithms.simulation import Simulator
 from src.utils.drone_path_setter import DronePathSetter
 from sys import argv
 
@@ -24,3 +25,8 @@ drones_path_print: list[list[Zone]] = [drone.path for drone in map_graph.drones_
 for path_list in drones_path_print:
     for path in path_list:
         print(path.zone_name)
+
+simulator: Simulator = Simulator(map_graph,
+                                 shortest_path,
+                                 map_graph.drones_list)
+

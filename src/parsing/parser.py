@@ -99,6 +99,7 @@ class Parser:
                     # Create a list of drones and add them to self.graph
                     for drone_id in range(1, (drone_count + 1)):
                         drone_obj = Drone(drone_id, start_zone)
+                        self.graph.start_zone.current_drones += 1
                         self.graph.drones_list.append(drone_obj)
             except Exception as error:
                 print(f"File line number: {self.line_number}")
