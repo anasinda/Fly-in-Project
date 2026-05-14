@@ -19,14 +19,10 @@ drone_path_setter: DronePathSetter = DronePathSetter(map_graph,
                                                      shortest_path,
                                                      map_graph.drones_list)
 drone_path_setter.set_drones_path()
-path_names = [path.zone_name for path in shortest_path]
-print(path_names)
-drones_path_print: list[list[Zone]] = [drone.path for drone in map_graph.drones_list]
-for path_list in drones_path_print:
-    for path in path_list:
-        print(path.zone_name)
-
 simulator: Simulator = Simulator(map_graph,
                                  shortest_path,
                                  map_graph.drones_list)
+
+run_sim = simulator.run_simulation()
+print(f"This is turns: {run_sim}")
 

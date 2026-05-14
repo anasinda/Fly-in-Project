@@ -18,6 +18,7 @@ class Graph:
         self.nb_drones_check = False
         self.nb_drones_count: int = 0
         self.drones_list: list[Drone] = []
+        self.in_end: dict[str, Drone] = {}
 
     def add_zone(self, zone: Zone) -> None:
         """

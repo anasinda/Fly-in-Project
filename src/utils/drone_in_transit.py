@@ -16,13 +16,15 @@ class DroneInTransit:
     def transit_launcher(self, turn_movements: list[str]):
         self.connection.drone_entry()
         self.next_zone.reservations += 1
+        self.drone.current_zone.current_drones -= 1
         self.drone.remove_current_zone()
         turn_movements.append(f"{self.drone}-{self.connection}")
 
     def transit_ender(self, turn_movements: list[str]):
         self.connection.drone_exit()
+        self.next_zone.reservations -= 1
         self.drone.move_to(self.next_zone)
-        turn_movements.append(f"{self.drone-self.drone.current_zone}")
+        turn_movements.append(f"{self.drone}-{self.drone.current_zone}")
 
 
 

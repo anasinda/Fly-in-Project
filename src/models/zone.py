@@ -36,15 +36,17 @@ class Zone:
 
     def zone_move_cost(self) -> int:
         """Check zone cost or if it is blocked."""
-        if self.zone_type == ZoneType.RESTRICTED:
+        if self.zone_type == ZoneType.RESTRICTED.value:
             return 2
-        elif self.zone_type == ZoneType.BLOCKED:
+        elif self.zone_type == ZoneType.BLOCKED.value:
             raise BlockedZoneError("Cannot enter blocked zone:"
                                    f"{self.zone_name}")
         else:
             return 1
 
     def check_if_reserved(self) -> bool:
+        if self.is_start or self.is_end:
+            return True
         return (self.current_drones + self.reservations) < self.zone_capacity
 
     def __str__(self):

@@ -13,9 +13,11 @@ class Drone:
 
     def move_to(self, zone: Zone) -> None:
         """Moves drone from one zone to the next"""
-        self.current_zone.current_drones -= 1
+        if self.current_zone is not None:
+            self.current_zone.current_drones -= 1
         self.current_zone = zone
         self.current_zone.current_drones += 1
+        self.path_index += 1
 
     def remove_current_zone(self) -> None:
         self.current_zone = None
