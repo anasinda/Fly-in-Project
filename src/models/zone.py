@@ -21,16 +21,18 @@ class Zone:
         self.zone_type = zone_type
         self.zone_color = zone_color
         self.zone_capacity = zone_capacity
-        self.current_drones = 0
-        self.is_start = False
-        self.is_end = False
-        self.is_regular = False
+        self.current_drones: int = 0
+        self.reservations: int = 0
+        self.is_start: bool = False
+        self.is_end: bool = False
+        self.is_regular: bool = False
 
     def can_accept_drone(self) -> bool:
         """Check if the zone has capacity for an additional drone."""
         if self.is_start or self.is_end:
             return True
         return self.current_drones < self.zone_capacity
+
 
     def zone_move_cost(self) -> int:
         """Check zone cost or if it is blocked."""
@@ -41,3 +43,9 @@ class Zone:
                                    f"{self.zone_name}")
         else:
             return 1
+
+    def check_if_reserved(self) -> bool:
+        return (self.current_drones + self.reservations) < self.zone_capacity
+
+    def __str__(self):
+        return f"{self.zone_name}"
