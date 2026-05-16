@@ -10,7 +10,7 @@ class Zone:
         x: int,
         y: int,
         zone_name: str,
-        zone_type: str = ZoneType.NORMAL,
+        zone_type: ZoneType = ZoneType.NORMAL,
         zone_color: str | None = None,
         zone_capacity: int = 1,
     ):
@@ -32,7 +32,6 @@ class Zone:
         if self.is_start or self.is_end:
             return True
         return self.current_drones < self.zone_capacity
-
 
     def zone_move_cost(self) -> int:
         """Check zone cost or if it is blocked."""

@@ -1,7 +1,9 @@
 from src.models.zone import Zone
 from src.models.graph import Graph
 from src.models.connection import Connection
-from src.utils.exceptions import BlockedZoneError, NoPathFoundError, ZoneNotFoundError
+from src.utils.exceptions import (BlockedZoneError,
+                                  NoPathFoundError,
+                                  ZoneNotFoundError)
 import heapq
 
 
@@ -39,7 +41,8 @@ class Pathfinder:
                 try:
                     other_zone: Zone = connection.other_zone(current_zone)
                 except ZoneNotFoundError as other_zone_e:
-                    print(f"Can't find other zone during pathfinding {other_zone_e}")
+                    print("Can't find other zone during pathfinding"
+                          f"{other_zone_e}")
                     exit(1)
                 try:
                     move_cost: int = other_zone.zone_move_cost()
@@ -55,6 +58,7 @@ class Pathfinder:
                 raise NoPathFoundError
         except NoPathFoundError as path_e:
             print(f"[PATH ERROR] f{path_e}")
+            exit(1)
 
         current: str | None = end.zone_name
         while current is not None:

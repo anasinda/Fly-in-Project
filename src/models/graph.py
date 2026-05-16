@@ -45,7 +45,7 @@ class Graph:
         key = frozenset({
             connection.zone_a.zone_name,
             connection.zone_b.zone_name
-            })
+        })
 
         if key in self.seen_connections:
             raise DuplicateConnectionError(

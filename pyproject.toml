@@ -1,2 +1,6 @@
 [tool.mypy]
 mypy_path = "src"
+
+[[tool.mypy.overrides]]
+module = "webcolors.*"
+ignore_missing_imports = true

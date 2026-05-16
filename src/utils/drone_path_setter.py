@@ -1,4 +1,3 @@
-from src.models.graph import Graph
 from src.models.drone import Drone
 from src.models.zone import Zone
 
@@ -7,9 +6,8 @@ class DronePathSetter:
     """
     A class that sets the path that each drone takes
     """
-    def __init__(self,
-                 path: list[Zone],
-                 drone_list: list[Drone]) -> None:
+
+    def __init__(self, path: list[Zone], drone_list: list[Drone]) -> None:
         """
         Initiliazing class attributes for use
         """
