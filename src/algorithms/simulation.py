@@ -11,14 +11,12 @@ class Simulator:
     """Simulator class that runs the drone routing simulation."""
 
     def __init__(self,
-                 graph:
-                 Graph,
-                 path: list[Zone], drone_list: list[Drone]) -> None:
+                 graph: Graph,
+                 drone_list: list[Drone]) -> None:
         """
         Initiliazing simulator class attributes
         """
         self.graph = graph
-        self.path = path
         self.drone_list = drone_list
         self.turns: int = 0
 

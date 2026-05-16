@@ -12,7 +12,7 @@ class Zone:
         zone_name: str,
         zone_type: ZoneType = ZoneType.NORMAL,
         zone_color: str | None = None,
-        zone_capacity: int = 1,
+        zone_capacity: int = 1
     ):
 
         self.x = x
@@ -23,6 +23,7 @@ class Zone:
         self.zone_capacity = zone_capacity
         self.current_drones: int = 0
         self.reservations: int = 0
+        self.temp_cost: int = 0
         self.is_start: bool = False
         self.is_end: bool = False
         self.is_regular: bool = False
@@ -33,15 +34,25 @@ class Zone:
             return True
         return self.current_drones < self.zone_capacity
 
-    def zone_move_cost(self) -> int:
+    def zone_move_cost(self) -> float:
         """Check zone cost or if it is blocked."""
-        if self.zone_type == ZoneType.RESTRICTED.value:
-            return 2
-        elif self.zone_type == ZoneType.BLOCKED.value:
+        if self.zone_type == ZoneType.RESTRICTED:
+            return 2 + self.temp_cost
+        elif self.zone_type ==  ZoneType.PRIORITY:
+            return 0.5 + self.temp_cost
+        elif self.zone_type == ZoneType.BLOCKED:
             raise BlockedZoneError("Cannot enter blocked zone:"
                                    f"{self.zone_name}")
         else:
-            return 1
+            if self.is_start or self.is_end:
+                return 1
+            return 1 + self.temp_cost
+
+    def increase_zone_cost(self) -> None:
+        self.temp_cost += 100
+
+    def decrease_zone_cost(self) -> None:
+        self.temp_cost -= 100
 
     def check_if_reserved(self) -> bool:
         if self.is_start or self.is_end:
