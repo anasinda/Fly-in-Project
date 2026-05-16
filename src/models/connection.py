@@ -38,10 +38,6 @@ class Connection:
         """Decrement connection usage"""
         self.current_usage -= 1
 
-    def check_current_usage(self) -> int:
-        """Check current connection usage"""
-        return self.current_usage
-
     def __str__(self) -> str:
         """Print zone names inside connection"""
         return f"{self.zone_a.zone_name}-{self.zone_b.zone_name}"

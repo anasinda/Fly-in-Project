@@ -27,36 +27,36 @@ class DuplicateConnectionError(Exception):
     pass
 
 
-class DuplicateDroneCountLineError(Exception):
-    """
-    Raised when finding a duplicate drone count
-    line when parsing file
-    """
-    pass
+# class DuplicateDroneCountLineError(Exception):
+#     """
+#     Raised when finding a duplicate drone count
+#     line when parsing file
+#     """
+#     pass
 
 
-class DuplicateStartOrEndZoneError(Exception):
-    """
-    Raised when finding a duplicate start or end zone
-    when parsing file
-    """
-    pass
+# class DuplicateStartOrEndZoneError(Exception):
+#     """
+#     Raised when finding a duplicate start or end zone
+#     when parsing file
+#     """
+#     pass
 
 
-class ZoneTypeError(Exception):
-    """
-    Raised when finding a wrong zone_type during
-    parsing
-    """
-    pass
+# class ZoneTypeError(Exception):
+#     """
+#     Raised when finding a wrong zone_type during
+#     parsing
+#     """
+#     pass
 
 
-class GraphKeyError(Exception):
-    """
-    Raised when finding a metadata that is not
-    supported during parsing
-    """
-    pass
+# class GraphKeyError(Exception):
+#     """
+#     Raised when finding a metadata that is not
+#     supported during parsing
+#     """
+#     pass
 
 
 class NoPathFoundError(Exception):
@@ -72,3 +72,21 @@ class SimulationStuckError(Exception):
     that let's it run infinitly
     """
     pass
+
+class ParserError(Exception):
+    """
+    Raised when finding an error during file parsing
+    """
+    pass
+
+class MetadataError(Exception):
+    """
+    Raised when finding the wrong type of metadata
+    """
+    pass
+
+class ConnectionError(Exception):
+    """
+    Raised when not finding a zone from connection
+    in zones list in graph
+    """

@@ -1,7 +1,7 @@
 from src.models.zone import Zone
 from src.models.graph import Graph
 from src.models.connection import Connection
-from src.utils.exceptions import BlockedZoneError, NoPathFoundError
+from src.utils.exceptions import BlockedZoneError, NoPathFoundError, ZoneNotFoundError
 import heapq
 
 
@@ -36,7 +36,11 @@ class Pathfinder:
                 current_zone
             )
             for connection in connections:
-                other_zone: Zone = connection.other_zone(current_zone)
+                try:
+                    other_zone: Zone = connection.other_zone(current_zone)
+                except ZoneNotFoundError as other_zone_e:
+                    print(f"Can't find other zone during pathfinding {other_zone_e}")
+                    exit(1)
                 try:
                     move_cost: int = other_zone.zone_move_cost()
                     new_cost = cost + move_cost
@@ -46,13 +50,19 @@ class Pathfinder:
                         heapq.heappush(queue, (new_cost, other_zone.zone_name))
                 except BlockedZoneError:
                     continue
-
-        if dist_list[end.zone_name] == float("inf"):
-            raise NoPathFoundError
+        try:
+            if dist_list[end.zone_name] == float("inf"):
+                raise NoPathFoundError
+        except NoPathFoundError as path_e:
+            print(f"[PATH ERROR] f{path_e}")
 
         current: str | None = end.zone_name
         while current is not None:
-            path.append(self.graph.get_zone(current))
+            try:
+                path.append(self.graph.get_zone(current))
+            except ZoneNotFoundError as get_zone_e_:
+                print(f"Can't get zone to append to path {get_zone_e_}")
+                exit(1)
             current = previous[current]
         path.reverse()
         return path

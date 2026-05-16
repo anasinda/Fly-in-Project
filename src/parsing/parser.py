@@ -1,108 +1,157 @@
+import re
+import webcolors
+from sys import argv
+from src.utils.exceptions import ParserError, MetadataError, DuplicateConnectionError
+from src.utils.exceptions import ConnectionError, ZoneNotFoundError, DuplicateZoneError
 from src.models.connection import Connection
 from src.models.drone import Drone
+from src.models.zone import Zone
 from src.models.graph import Graph
-from src.parsing.error_checker import ErrorChecker
-import src.utils.exceptions as exc
-from src.models.graph_keys import GraphKeys
-
+from src.utils.graph_keys import GraphKeys
+from src.utils.zone_types import ZoneType
 
 class Parser:
-    def __init__(self) -> None:
-        self.graph: Graph = Graph()
+    def __init__(self, graph: Graph) -> None:
+        self.graph = graph
         self.line_number: int = 0
-        self.error_checker = ErrorChecker()
 
-    def nb_drones_parser(self, drones_line: str, graph: Graph) -> None:
-
-        # Split line, and remove ':'
-        nb_drones, drone_count = drones_line.split()
-        nb_drones = nb_drones.replace(":", "")
-
-        # Error checker for nb_drone_parser
-        self.error_checker.nb_drones_validator(
-            self.line_number, nb_drones, drone_count, graph
-        )
-
-    def zone_parser(self, zone: str, graph: Graph) -> None:
-        # Split line, and remove ":" from zone_ype
-        main_data = zone.split("[")[0]
-        zone_placeholder, zone_name, x, y = main_data.split()
-        zone_placeholder = zone_placeholder.replace(":", "")
-
-        # Error checker for zone_parser
-        zone_obj = self.error_checker.zone_data_validator(x,
-                                                          y,
-                                                          zone_name,
-                                                          zone)
-
-        # Checking if zone is start, end or regualr
+    def zone_parser(self, line: re.Match | None) -> None:
+        zone_placeholder: str = line.group(1)
+        zone_name: str = line.group(2)
+        x: int = int(line.group(3))
+        y: int = int(line.group(4))
+        metadata: str | None = line.group(5)
+        zone_type: ZoneType = ZoneType.NORMAL
+        zone_color: str | None = None
+        zone_capacity: int = 1
         zone_catagory: dict[str, str] = {
             "start_hub": "is_start",
-            "end_hub": "is_end",
+            "end_hub": "is_end"
         }
+        zone_check = zone_catagory.get(zone_placeholder, None)
 
-        result = zone_catagory.get(zone_placeholder, "is_regular")
-        setattr(zone_obj, result, True)
+        if metadata:
+            split_metadata: list[str] = metadata.split()
+            store_metadata: dict[str, str] = {}
+            for data in split_metadata:
+                if "=" not in data:
+                    raise MetadataError(f"Invalid metadata format: {data}")
+                key, value = data.split("=", 1)
+                try:
+                    GraphKeys(key)
+                    store_metadata[key] = value
+                except ValueError:
+                    raise ParserError(f"Invalid key: {key}")
 
-        graph.add_zone(zone_obj)
+            for key, item in store_metadata.items():
+                if key == GraphKeys.ZONE.value:
+                    try:
+                        item = ZoneType(item)
+                        zone_type = item
+                    except ValueError:
+                        raise ParserError(f"Invalid zone type: {item}")
+                elif key == GraphKeys.COLOR.value:
+                    if item != "rainbow":
+                        try:
+                            webcolors.name_to_rgb(item)
+                            zone_color = item
+                        except ValueError:
+                            raise ParserError(f"Invalid color: {item}")
+                elif key == GraphKeys.MAX_DRONES.value:
+                    try:
+                        item = int(item)
+                        if item <= 0:
+                            raise ParserError(f"Number isn't supported {item}")
+                        else:
+                            zone_capacity = item
+                    except ValueError:
+                        raise ParserError(f"Invalid value: {item}")
 
-    def connection_parser(self, connection_line: str, graph: Graph) -> None:
-        # Split line, take zone connections, remove ':'
-        # If metadata is found, save it in a dictionary for later use
-        # Create connection object
+        zone_obj = Zone(x, y, zone_name, zone_type, zone_color, zone_capacity)
+
+        if zone_check:
+            setattr(zone_obj, zone_check, True)
+
         try:
-            zones = connection_line.split()[1]
-        except IndexError as no_connection:
-            print("Error: no connection found")
-            raise no_connection
-        zone_a, zone_b = zones.split("-")
-        metadata = self.error_checker.connection_validator(connection_line)
-        connection_obj = Connection(
-            graph.get_zone(zone_a.strip()),
-            graph.get_zone(zone_b.strip()),
-            metadata.get(GraphKeys.MAX_LINK_CAPACITY, 1),
-        )
+            self.graph.add_zone(zone_obj)
+        except DuplicateZoneError:
+            raise DuplicateZoneError
 
-        # Add connection object to graph
-        graph.add_connection(connection_obj)
+        self.graph.zones[zone_name] = zone_obj
 
-    def main_parser(self, file_path: str) -> None:
-        with open(file_path, "r") as map_file:
-            # Creating graph
 
-            # Zone checks for parser
-            zone_check = ["start_hub:", "end_hub:", "hub:"]
+
+    def connection_parser(self, line: re.Match | None) -> None:
+        zone_a: str = line.group(1)
+        zone_b: str = line.group(2)
+        metadata: str | None = line.group(3)
+        max_link_cap: int = 1
+
+        if zone_a not in self.graph.zones or zone_b not in self.graph.zones:
+            raise ConnectionError(f"{zone_a} or {zone_b} not in zones list")
+
+        if metadata:
+            key, value = metadata.split("=", 1)
             try:
-                for line in map_file:
-                    stripped_line = line.strip()
-                    # Skip if line is empthy or starts with '# '
-                    if not stripped_line or stripped_line.startswith("#"):
-                        continue
-                    # Uses nb_drones_parser
-                    elif "nb_drones:" in stripped_line:
-                        self.nb_drones_parser(stripped_line, self.graph)
-                    # Uses zone_parser if zone in zone_check
-                    elif any(zone in stripped_line for zone in zone_check):
-                        self.zone_parser(stripped_line, self.graph)
-                    # Uses connection parser
-                    elif "connection:" in stripped_line:
-                        self.connection_parser(stripped_line, self.graph)
-                    self.line_number += 1
+                GraphKeys(key)
+            except ValueError:
+                raise ParserError(f"Invalid key: {key}")
 
-                # Check if we have start zone to create
-                # drones and set their start zone
-                if self.graph.start_zone is None:
-                    raise exc.ZoneNotFoundError("Start zone not found")
-                if self.graph.start_zone.is_start:
-                    start_zone = self.graph.start_zone
-                    drone_count = self.graph.nb_drones_count
-                    # Create a list of drones and add them to self.graph
-                    for drone_id in range(1, (drone_count + 1)):
-                        drone_obj = Drone(drone_id, start_zone)
-                        self.graph.start_zone.current_drones += 1
-                        self.graph.drones_list.append(drone_obj)
-            except Exception as error:
-                print(f"File line number: {self.line_number}")
-                print(f"Error type: {type(error).__name__}")
-                print(f"Error info: {error}")
+            try:
+                max_link_cap = int(value)
+                if max_link_cap <= 0:
+                    raise ValueError(f"Number isn't supported {max_link_cap}")
+            except ValueError:
+                raise ParserError(f"Invalid value: {max_link_cap}")
+
+        connection_obj = Connection(self.graph.zones[zone_a], self.graph.zones[zone_b], max_link_cap)
+        try:
+            self.graph.add_connection(connection_obj)
+        except DuplicateConnectionError:
+            raise DuplicateConnectionError
+
+    def drone_setter(self, graph: Graph, start_zone) -> None:
+        for drone_id in range(1, graph.nb_drones_count + 1):
+            drone_obj = Drone(drone_id, start_zone)
+            graph.start_zone.current_drones += 1
+            graph.drones_list.append(drone_obj)
+
+    def run_parser(self) -> None:
+        nb_drones_re = re.compile(r"^nb_drones:\s+(\d+)$")
+        zone_re = re.compile(r"^(start_hub|end_hub|hub):\s+(\w+)\s+(-?\d+)\s+(-?\d+)(?:\s+\[(.*)\])?$")
+        connection_re = re.compile(r"^connection:\s+(\w+)-(\w+)(?:\s+\[(\w+=\d+)\])?$")
+
+        try:
+            file_path = argv[1]
+            try:
+                with open(file_path, "r") as file:
+                    try:
+                        for line in file:
+                            line = line.strip()
+                            if not line or line.startswith("#"):
+                                continue
+                            elif res := nb_drones_re.match(line):
+                                self.graph.nb_drones_count = int(res.group(1))
+                            elif res := zone_re.match(line):
+                                self.zone_parser(res)
+                            elif res := connection_re.match(line):
+                                self.connection_parser(res)
+                            else:
+                                raise ParserError(f"Line {self.line_number}: Invalid syntax: {line}")
+                    except (ParserError, MetadataError, DuplicateConnectionError) as p_error:
+                        print(f"[PARSING ERROR] {p_error}")
+                        exit(1)
+            except FileNotFoundError:
+                print(f"[PARSING ERROR] No such file or directory: {file_path}")
                 exit(1)
+        except IndexError:
+            print(f"[PARSING ERROR] No file was sent")
+            exit(1)
+        try:
+            if self.graph.end_zone and self.graph.start_zone:
+                self.drone_setter(self.graph, self.graph.start_zone)
+            else:
+                raise ZoneNotFoundError(f"No start or end zone found")
+        except ZoneNotFoundError as z_error:
+            print(f"[PARSING ERROR]", z_error)
+            exit(1)

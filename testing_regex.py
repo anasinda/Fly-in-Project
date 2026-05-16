@@ -1,9 +1,18 @@
-import re
+from sys import argv
+from src.models.graph import Graph
+from src.parsing.parser import NewParser
+from src.algorithms.pathfinding import Pathfinder
+from src.utils.drone_path_setter import DronePathSetter
+from src.algorithms.simulation import Simulator
 
-text_string = "nb_drones: 5"
-test_string2 = "hub: roof1 3 4"
-pattern = re.compile(r"^nb_drones:\s\d+$")
-pattern2 = re.compile(r"hub:\s\w+\s\d+\s\d+")
-res = re.findall(pattern2, test_string2)
-if bool(res):
-    print("THis is res", res[0])
+
+graph = Graph()
+parser = NewParser(graph)
+parser.run_parser()
+pathfinder = Pathfinder(graph)
+find_path = pathfinder.run_dijkstra_algo(graph.start_zone, graph.end_zone)
+drone_path_setter = DronePathSetter(find_path, graph.drones_list)
+drone_path_setter.set_drones_path()
+simulator = Simulator(graph, find_path, graph.drones_list)
+print(simulator.run_simulation())
+print(graph.nb_drones_count)

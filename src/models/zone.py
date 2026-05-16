@@ -1,4 +1,4 @@
-from src.models.zone_types import ZoneType
+from src.utils.zone_types import ZoneType
 from src.utils.exceptions import BlockedZoneError
 
 
@@ -10,7 +10,7 @@ class Zone:
         x: int,
         y: int,
         zone_name: str,
-        zone_type: str = ZoneType.NORMAL.value,
+        zone_type: str = ZoneType.NORMAL,
         zone_color: str | None = None,
         zone_capacity: int = 1,
     ):
