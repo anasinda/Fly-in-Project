@@ -13,8 +13,8 @@ parser.main_parser(file_path)
 map_graph: Graph = parser.graph
 finder: Pathfinder = Pathfinder(map_graph)
 shortest_path: list[Zone] = finder.run_dijkstra_algo(
-    map_graph.zones['start'],
-    map_graph.zones['goal'])
+    map_graph.zones[map_graph.start_zone.zone_name],
+    map_graph.zones[map_graph.end_zone.zone_name])
 drone_path_setter: DronePathSetter = DronePathSetter(map_graph,
                                                      shortest_path,
                                                      map_graph.drones_list)
