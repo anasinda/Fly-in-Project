@@ -48,7 +48,7 @@ class Zone:
         return 1 + self.temp_cost
 
     def increase_zone_cost(self) -> None:
-        self.temp_cost = 100
+        self.temp_cost = 0.1
 
     def decrease_zone_cost(self) -> None:
         self.temp_cost = 0

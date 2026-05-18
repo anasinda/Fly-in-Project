@@ -18,7 +18,7 @@ class Simulator:
         """
         self.graph = graph
         self.drone_list = drone_list
-        self.turns: int = 1
+        self.turns: int = 0
 
     def drone_checker(self) -> None:
         """
