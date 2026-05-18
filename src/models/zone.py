@@ -49,10 +49,10 @@ class Zone:
             return 1 + self.temp_cost
 
     def increase_zone_cost(self) -> None:
-        self.temp_cost += 100
+        self.temp_cost = 100
 
     def decrease_zone_cost(self) -> None:
-        self.temp_cost -= 100
+        self.temp_cost = 0
 
     def check_if_reserved(self) -> bool:
         if self.is_start or self.is_end:
