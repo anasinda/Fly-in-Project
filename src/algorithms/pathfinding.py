@@ -53,12 +53,9 @@ class Pathfinder:
                         heapq.heappush(queue, (new_cost, other_zone.zone_name))
                 except BlockedZoneError:
                     continue
-        try:
-            if dist_list[end.zone_name] == float("inf"):
-                raise NoPathFoundError
-        except NoPathFoundError as path_e:
-            print(f"[PATH ERROR] f{path_e}")
-            exit(1)
+
+        if dist_list[end.zone_name] == float("inf"):
+            raise NoPathFoundError
 
         current: str | None = end.zone_name
         while current is not None:
