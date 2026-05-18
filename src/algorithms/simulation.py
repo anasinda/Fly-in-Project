@@ -18,7 +18,7 @@ class Simulator:
         """
         self.graph = graph
         self.drone_list = drone_list
-        self.turns: int = 0
+        self.turns: int = 1
 
     def drone_checker(self) -> None:
         """
@@ -43,7 +43,6 @@ class Simulator:
         in_transit: dict[str, DroneInTransit] = {}
         try:
             while self.drone_list:
-
                 # in-transit drones are drones that are going to
                 # restricted zones, just arrived for drones that
                 # are in restricted zone now, so we don't check them
@@ -58,7 +57,7 @@ class Simulator:
                         use_transit.transit_ender(turn_movements)
                         just_arrived.add(drone_id)
                         del in_transit[drone_id]
-
+                used_connections: list[Connection] = []
                 for drone in self.drone_list:
                     if drone.full_drone_id in just_arrived:
                         continue
@@ -89,8 +88,9 @@ class Simulator:
                                             drone.full_drone_id] = transit_obj
                                     else:
                                         connection.drone_entry()
+                                        # print("THIS IS USED CONNECTION:", connection.current_usage)
+                                        used_connections.append(connection)
                                         drone.move_to(next_zone)
-                                        connection.drone_exit()
                                         turn_movements.append(
                                             f"{drone}-{next_zone}")
                         # break connection loop if drone moved to correct zone
@@ -106,6 +106,8 @@ class Simulator:
                     raise SimulationStuckError(
                         "All drones are blocked — possible deadlock"
                     )
+                for used_connection in used_connections:
+                    used_connection.drone_exit()
                 print("Turn: ", self.turns)
                 print(" ".join(turn_movements))
                 self.turns += 1
