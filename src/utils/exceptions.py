@@ -102,3 +102,12 @@ class ConnectionError(Exception):
     Raised when not finding a zone from connection
     in zones list in graph
     """
+
+    pass
+
+class EmptyFileException(Exception):
+    """
+    Raised when opening an empthy file
+    """
+
+    pass

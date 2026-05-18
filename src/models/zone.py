@@ -36,17 +36,16 @@ class Zone:
 
     def zone_move_cost(self) -> float:
         """Check zone cost or if it is blocked."""
-        if self.zone_type == ZoneType.RESTRICTED:
+        if self.is_start or self.is_end:
+            return 1
+        elif self.zone_type == ZoneType.RESTRICTED:
             return 2 + self.temp_cost
         elif self.zone_type ==  ZoneType.PRIORITY:
             return 0.5 + self.temp_cost
         elif self.zone_type == ZoneType.BLOCKED:
             raise BlockedZoneError("Cannot enter blocked zone:"
                                    f"{self.zone_name}")
-        else:
-            if self.is_start or self.is_end:
-                return 1
-            return 1 + self.temp_cost
+        return 1 + self.temp_cost
 
     def increase_zone_cost(self) -> None:
         self.temp_cost = 100
