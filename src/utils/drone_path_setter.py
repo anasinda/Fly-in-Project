@@ -20,6 +20,5 @@ class DronePathSetter:
         from pathfinding algo for each one
         """
         for index, drone in enumerate(self.drone_list):
-            print("paths:", len(self.paths))
             path_index = index % len(self.paths)
             drone.path = self.paths[path_index]

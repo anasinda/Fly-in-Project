@@ -111,3 +111,10 @@ class EmptyFileException(Exception):
     """
 
     pass
+
+class DuplicateCoordinates(Exception):
+    """
+    Raised when findinng duplicate x or y coordinates
+    """
+
+    pass

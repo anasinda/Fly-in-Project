@@ -108,7 +108,6 @@ class Simulator:
                     )
                 for used_connection in used_connections:
                     used_connection.drone_exit()
-                print("Turn: ", self.turns)
                 print(" ".join(turn_movements))
                 self.turns += 1
         except (SimulationStuckError, ZoneNotFoundError) as sim_e:

@@ -6,7 +6,7 @@ from src.models.connection import Connection
 from src.models.drone import Drone
 from src.models.zone import Zone
 from src.models.graph import Graph
-from src.utils.graph_keys import GraphKeys
+from src.utils.graph_keys import ZoneKeys, ConnectionKeys
 from src.utils.zone_types import ZoneType
 from src.utils.exceptions import (ParserError,
                                   MetadataError,
@@ -14,6 +14,7 @@ from src.utils.exceptions import (ParserError,
                                   ZoneNotFoundError,
                                   DuplicateZoneError,
                                   DuplicateConnectionError,
+                                  DuplicateCoordinates,
                                   EmptyFileException)
 
 
@@ -39,6 +40,10 @@ class Parser:
         zone_check = zone_catagory.get(zone_placeholder, None)
 
         if metadata:
+            metadata = re.sub(r"\s+", " ", metadata).strip()
+            metadata = re.sub(r"\s+=", "=", metadata).strip()
+            metadata = re.sub(r"=\s+", "=", metadata).strip()
+            metadata = re.sub(r"\s+=\s+", "=", metadata).strip()
             split_metadata: list[str] = metadata.split()
             store_metadata: dict[str, str] = {}
             for data in split_metadata:
@@ -47,39 +52,38 @@ class Parser:
                                         f"Invalid metadata format: {data}")
                 key, value = data.split("=", 1)
                 try:
-                    GraphKeys(key)
-                    store_metadata[key] = value
+                    key, value = map(str.strip, [key, value])
+                    ZoneKeys(key)
+                    store_metadata[key] = value.strip()
                 except ValueError:
                     raise ParserError(f"Line {self.line_number} :"
                                       f"Invalid key: {key}")
 
             for key, item in store_metadata.items():
-                if key == GraphKeys.ZONE.value:
+                if key == ZoneKeys.ZONE.value:
                     try:
                         ZoneType(item)
                         zone_type = ZoneType(item)
                     except ValueError:
                         raise ParserError(f"Line {self.line_number} :"
                                           f"Invalid zone type: {item}")
-                elif key == GraphKeys.COLOR.value:
+                elif key == ZoneKeys.COLOR.value:
                     if item != "rainbow":
                         try:
                             webcolors.name_to_rgb(item)
                             zone_color = item
-                        except ValueError:
+                        except ValueError as zon_e:
                             raise ParserError(f"Line {self.line_number} :"
-                                              f"Invalid color: {item}")
-                elif key == GraphKeys.MAX_DRONES.value:
+                                              f"Invalid value: {zon_e}")
+                elif key == ZoneKeys.MAX_DRONES.value:
                     try:
                         if int(item) <= 0:
-                            raise ParserError(f"Line {self.line_number} :"
-                                              f"Number isn't supported {item}")
+                            raise ValueError(f"Number isn't supported {item}")
                         else:
                             zone_capacity = int(item)
-                    except ValueError:
+                    except ValueError as max_e:
                         raise ParserError(f"Line {self.line_number} :"
-                                          f"Invalid value: {item}")
-
+                                          f"Invalid value: {max_e}")
         zone_obj = Zone(x, y, zone_name, zone_type, zone_color, zone_capacity)
 
         if zone_check:
@@ -91,6 +95,15 @@ class Parser:
             raise DuplicateZoneError(f"Line {self.line_number}: "
                                      f"Found duplicate zone {zone_obj.zone_name}")
 
+        try:
+            for zone in self.graph.zones.values():
+                if zone_name != zone.zone_name:
+                    if zone.x == x and zone.y == y:
+                        raise DuplicateCoordinates
+        except DuplicateCoordinates:
+            raise DuplicateCoordinates(f"Line :{self.line_number} "
+                                       f"Found duplicate coordinates x: {x} y: {y}\n"
+                                       f"Zone: {zone.zone_name}")
         self.graph.zones[zone_name] = zone_obj
 
     def connection_parser(self, line: re.Match | None) -> None:
@@ -111,7 +124,8 @@ class Parser:
         if metadata:
             key, value = metadata.split("=", 1)
             try:
-                GraphKeys(key)
+                key, value = map(str.strip, [key, value])
+                ConnectionKeys(key)
             except ValueError:
                 raise ParserError(f"Line {self.line_number}: "
                                   f"Invalid key: {key}")
@@ -168,7 +182,7 @@ class Parser:
                             if not line or line.startswith("#"):
                                 continue
                             elif res := nb_drones_re.match(line):
-                                if int(res.group(1)) <= 0:
+                                if int(res.group(1)) <= 0 or int(res.group(1)) > 10000:
                                     raise ParserError(
                                         f"Line {self.line_number}: "
                                         f"Invalid number: {res.group(1)}")
@@ -188,6 +202,7 @@ class Parser:
                         MetadataError,
                         DuplicateConnectionError,
                         DuplicateZoneError,
+                        DuplicateCoordinates,
                         ConnectionError,
                         EmptyFileException
                     ) as p_error:
