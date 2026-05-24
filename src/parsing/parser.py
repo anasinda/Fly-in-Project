@@ -1,6 +1,7 @@
 import os
 import re
 import webcolors
+
 from sys import argv
 from src.models.connection import Connection
 from src.models.drone import Drone
@@ -85,7 +86,6 @@ class Parser:
                         raise ParserError(f"Line {self.line_number} :"
                                           f"Invalid value: {max_e}")
         zone_obj = Zone(x, y, zone_name, zone_type, zone_color, zone_capacity)
-
         if zone_check:
             setattr(zone_obj, zone_check, True)
 
@@ -105,7 +105,6 @@ class Parser:
                                        f"Found duplicate coordinates x: {x} y: {y}\n"
                                        f"Zone: {zone.zone_name}")
         self.graph.zones[zone_name] = zone_obj
-
     def connection_parser(self, line: re.Match | None) -> None:
         if line is not None:
             zone_a: str = line.group(1)
@@ -147,7 +146,6 @@ class Parser:
         except DuplicateConnectionError:
             raise DuplicateConnectionError(f"Line {self.line_number}: "
                                            "Found duplicate connection")
-
     def drone_setter(self, graph: Graph, start_zone) -> None:
         for drone_id in range(1, graph.nb_drones_count + 1):
             drone_obj = Drone(drone_id, start_zone)

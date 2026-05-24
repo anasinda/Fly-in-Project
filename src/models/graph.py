@@ -61,6 +61,6 @@ class Graph:
             raise ZoneNotFoundError(f"Zone {name} not found in graph")
         return self.zones[name]
 
-    def get_zone_connections(self, name: str) -> list[Connection]:
+    def get_zone_connections(self, zone: str) -> list[Connection]:
         """Retrieves connection from adjacency list"""
-        return self.adjacency[name]
+        return self.adjacency[zone]
