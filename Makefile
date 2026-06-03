@@ -1,12 +1,23 @@
+PYTHON = python3
+MAIN = main.py
+MAP ?= maps/easy/01_linear_path.txt
+
+
+all: install
+
 install:
-		python -m venv .venv
-		.venv/bin/pip install --upgrade pip
-		.venv/bin/pip install -r requirements.txt
+		pip install -r requirements.txt
+
+run:
+		$(PYTHON) $(MAIN) $(MAP)
 
 clean:
 		find . -type d -name ".mypy_cache" -exec rm -rf {} +
 		find . -type d -name "__pycache__" -exec rm -rf {} +
 		find . -type f -name "*.pyc" -delete
 
-delete_venv:
-		rm -rf .venv
+lint:
+	mypy *.py
+	flake8 *.py
+
+.PHONY: install run clean lint

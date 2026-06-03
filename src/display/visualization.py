@@ -40,26 +40,25 @@ class Visualizer:
                 parts = move.split('-')
                 drone_id = parts[0]
                 destination = '-'.join(parts[1:])
-                print("DEST", destination)
                 count = seen.get(destination, 0)
                 seen[destination] = count + 1
                 offset = count * 0.15
                 if len(parts) == 2:
                     zone = self.graph.get_zone(parts[1])
                     if zone:
-                        self.ax.scatter(zone.x + offset, zone.y, s=400, color='gray')
-                        self.ax.text(zone.x + offset, zone.y - 0.1, drone_id,
-                                    ha='center', va='top', fontsize=25, color='gray')
+                        self.ax.scatter(zone.x + offset, zone.y, s=100, color='gray')
+                        self.ax.text(zone.x + offset, zone.y + 0.4, drone_id,
+                                    ha='center', va='top', fontsize=10, color='gray')
                 elif len(parts) == 3:
                     zone_a = self.graph.get_zone(parts[1])
                     zone_b = self.graph.get_zone(parts[2])
                     if zone_a and zone_b:
                         mid_x = (zone_a.x + zone_b.x) / 2
                         mid_y = (zone_a.y + zone_b.y) / 2
-                        self.ax.scatter(mid_x + offset, mid_y, s=400, color='gray')
-                        self.ax.text(mid_x + offset, mid_y - 0.1, drone_id,
-                                    ha='center', va='top', fontsize=25, color='gray')
-        self.ax.text(0.0050, 0.0050, f"Turn: {self.current_turn + 1}", transform=self.ax.transAxes, fontsize=12)
+                        self.ax.scatter(mid_x + offset, mid_y, s=100, color='gray')
+                        self.ax.text(mid_x + offset, mid_y + 0.4, drone_id,
+                                    ha='center', va='top', fontsize=10, color='gray')
+        self.ax.text(0.0020, 0.0040, f"Turn: {self.current_turn + 1}", transform=self.ax.transAxes, fontsize=9)
         self.fig.canvas.draw()
 
     def draw_graph(self) -> None:
@@ -71,11 +70,9 @@ class Visualizer:
                 self.ax.plot(x, y, color='black')
 
         for zone in self.graph.zones.values():
-            self.ax.scatter(zone.x, zone.y, s=2000, color=zone.zone_color)
+            self.ax.scatter(zone.x, zone.y, s=800, color=zone.zone_color)
             self.ax.text(zone.x, zone.y, zone.zone_name, ha='center', va='center')
-
-        self.ax.scatter(self.graph.start_zone.x, self.graph.start_zone.y, s=800, color='black')
-        self.ax.text(self.graph.start_zone.x, self.graph.start_zone.y - 0.1, "ALL-DRONES", ha='center', va='top', fontsize=20, color='black')
+        self.ax.set_aspect('equal')
         self.fig.canvas.draw()
 
     def run(self):
