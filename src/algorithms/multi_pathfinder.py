@@ -11,7 +11,8 @@ class MultiPathfinder:
         self.previuos_path: list[Zone] | None = None
 
     def run_multi_pathfinder(self) -> list[list[Zone]]:
-
+        if self.graph.start_zone is None or self.graph.end_zone is None:
+            raise ValueError("Start or end zone not found")
         while True:
             try:
                 current_path = self.pathfinder.run_dijkstra_algo(self.graph.start_zone, self.graph.end_zone)

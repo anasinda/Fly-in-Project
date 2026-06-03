@@ -45,7 +45,7 @@ class Pathfinder:
                           f"{other_zone_e}")
                     exit(1)
                 try:
-                    move_cost: int = other_zone.zone_move_cost()
+                    move_cost: int | float = other_zone.zone_move_cost()
                     new_cost = cost + move_cost
                     if new_cost < dist_list[other_zone.zone_name]:
                         dist_list[other_zone.zone_name] = new_cost

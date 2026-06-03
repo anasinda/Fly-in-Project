@@ -23,7 +23,7 @@ class Zone:
         self.zone_capacity = zone_capacity
         self.current_drones: int = 0
         self.reservations: int = 0
-        self.temp_cost: int = 0
+        self.temp_cost: int | float = 0
         self.is_start: bool = False
         self.is_end: bool = False
         self.is_regular: bool = False

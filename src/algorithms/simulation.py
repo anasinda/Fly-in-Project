@@ -27,7 +27,7 @@ class Simulator:
         needs_removing: dict[str, Drone] = {}
 
         for drone in self.drone_list:
-            if drone.has_arrived(self.graph.end_zone):
+            if self.graph.end_zone and drone.has_arrived(self.graph.end_zone):
                 needs_removing[drone.full_drone_id] = drone
 
         for key, value in needs_removing.items():
@@ -80,9 +80,9 @@ class Simulator:
         for drone in self.drone_list:
             if drone.full_drone_id in just_arrived:
                 continue
-            current_zone: Zone = drone.current_zone
-            next_zone: Zone = drone.next_zone_in_path()
-            if next_zone is None:
+            current_zone: Zone | None = drone.current_zone
+            next_zone: Zone | None = drone.next_zone_in_path()
+            if next_zone is None or current_zone is None:
                 continue
             connections: list[Connection] = []
             connections = self.graph.get_zone_connections(current_zone.zone_name)
