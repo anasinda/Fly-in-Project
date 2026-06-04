@@ -9,16 +9,11 @@ import heapq
 
 class Pathfinder:
     def __init__(self, graph: Graph) -> None:
-        """
-        Initializing graph as attribute of pathfinder class
-        """
+        """Store the graph used for path searches."""
         self.graph: Graph = graph
 
     def run_dijkstra_algo(self, start: Zone, end: Zone) -> list[Zone]:
-        """
-        Dijkstra's algorithm for finding the shortest path
-        our drones can take to reach the end/goal zone
-        """
+        """Return the shortest path between two zones using Dijkstra."""
         dist_list: dict[str, float] = {
             zone_name: float("inf") for zone_name in self.graph.zones.keys()
         }

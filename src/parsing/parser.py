@@ -22,11 +22,15 @@ from src.utils.exceptions import (ParserError,
 
 
 class Parser:
+    """Parse the input file into graph zones, connections, and drones."""
+
     def __init__(self, graph: Graph) -> None:
+        """Store the target graph and initialize the line counter."""
         self.graph = graph
         self.line_number: int = 0
 
     def zone_parser(self, line: re.Match | None) -> None:
+        """Parse one zone declaration and add it to the graph."""
         if line is not None:
             zone_placeholder: str = line.group(1)
             zone_name: str = line.group(2)
@@ -127,6 +131,7 @@ class Parser:
         self.graph.zones[zone_name] = zone_obj
 
     def connection_parser(self, line: re.Match | None) -> None:
+        """Parse one connection declaration and add it to the graph."""
         if line is not None:
             zone_a: str = line.group(1)
             zone_b: str = line.group(2)
@@ -172,7 +177,8 @@ class Parser:
             raise DuplicateConnectionError(f"Line {self.line_number}: "
                                            "Found duplicate connection")
 
-    def drone_setter(self, graph: Graph, start_zone) -> None:
+    def drone_setter(self, graph: Graph, start_zone: Zone) -> None:
+        """Create the drones that start at the graph's starting zone."""
         for drone_id in range(1, graph.nb_drones_count + 1):
             drone_obj = Drone(drone_id, start_zone)
             if graph.start_zone is not None:
@@ -180,6 +186,7 @@ class Parser:
             graph.drones_list.append(drone_obj)
 
     def run_parser(self) -> None:
+        """Read the input file and populate the graph."""
         nb_drones_re = re.compile(r"^nb_drones:\s+(-?\d+)$")
         zone_re = re.compile(
             r"^(start_hub|end_hub|hub):\s+"

@@ -20,8 +20,8 @@ try:
     drone_path_setter = DronePathSetter(multi_paths, graph.drones_list)
     drone_path_setter.set_drones_path()
     simulator = Simulator(graph, graph.drones_list)
-    turns, simulation_log = simulator.run_simulation()
-    visualization = Visualizer(graph, turns, simulation_log)
+    simulator_results: tuple[int, list[list[str]]] = simulator.run_simulation()
+    visualization = Visualizer(graph, simulator_results[0], simulator_results[1])
     visualization.run()
 except KeyboardInterrupt as k_e:
     print("\rExited program with Ctrl + C")

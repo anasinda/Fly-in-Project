@@ -5,13 +5,17 @@ from src.algorithms.pathfinding import Pathfinder
 
 
 class MultiPathfinder:
+    """Build multiple viable paths by repeatedly rerunning pathfinding."""
+
     def __init__(self, graph: Graph, pathfinder: Pathfinder) -> None:
+        """Store the graph, pathfinder, and collected paths."""
         self.graph = graph
         self.pathfinder = pathfinder
         self.paths: list[list[Zone]] = []
         self.previuos_path: list[Zone] | None = None
 
     def run_multi_pathfinder(self) -> list[list[Zone]]:
+        """Return all distinct paths discovered for the current graph."""
         if self.graph.start_zone is None or self.graph.end_zone is None:
             raise ValueError("Start or end zone not found")
         while True:

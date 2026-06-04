@@ -1,10 +1,14 @@
 import matplotlib.pyplot as plt
+from matplotlib.backend_bases import Event, KeyEvent
 from src.models.graph import Graph
 
 
 class Visualizer:
+    """Render the graph and move through the simulation turn by turn."""
+
     def __init__(self, graph: Graph, turns: int,
                  simulation_log: list[list[str]]) -> None:
+        """Store visualization state and create the matplotlib figure."""
         self.graph = graph
         self.turns = turns
         self.current_turn: int = 0
@@ -12,7 +16,10 @@ class Visualizer:
         self.fig, self.ax = plt.subplots(figsize=(19.2, 10.8))
         self.fig.canvas.mpl_connect('key_press_event', self.on_key)
 
-    def on_key(self, event) -> None:
+    def on_key(self, event: Event) -> None:
+        """Handle key presses for stepping through turns."""
+        if not isinstance(event, KeyEvent):
+            return
         if event.key == 'right':
             if self.current_turn < self.turns:
                 self.draw_graph()
@@ -30,6 +37,7 @@ class Visualizer:
             self.draw_graph()
 
     def draw_drones(self) -> None:
+        """Draw drone markers for the current turn."""
         if self.current_turn < self.turns:
             turn_moves = self.simualtion_log[self.current_turn]
             seen: dict[str, int] = {}
@@ -79,6 +87,7 @@ class Visualizer:
         self.fig.canvas.draw()
 
     def draw_graph(self) -> None:
+        """Draw the map nodes and connections."""
         self.ax.cla()
         for connections in self.graph.adjacency.values():
             for connection in connections:
@@ -99,6 +108,7 @@ class Visualizer:
         self.ax.set_aspect('equal')
         self.fig.canvas.draw()
 
-    def run(self):
+    def run(self) -> None:
+        """Open the visualization window."""
         self.draw_graph()
         plt.show()

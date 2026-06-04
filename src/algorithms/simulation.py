@@ -12,17 +12,13 @@ class Simulator:
     def __init__(self,
                  graph: Graph,
                  drone_list: list[Drone]) -> None:
-        """
-        Initiliazing simulator class attributes
-        """
+        """Store the graph and active drones for the simulation."""
         self.graph = graph
         self.drone_list = drone_list
         self.turns: int = 0
 
     def drone_checker(self) -> None:
-        """
-        Remove arrived drones from active list and add to in_end
-        """
+        """Move arrived drones from the active list into `graph.in_end`."""
         needs_removing: dict[str, Drone] = {}
 
         for drone in self.drone_list:
@@ -35,6 +31,7 @@ class Simulator:
 
     def check_in_transit(self, turn_movements: list[str],
                          in_transit: dict[str, DroneInTransit]) -> set[str]:
+        """Advance drones that are currently travelling through links."""
         just_arrived: set[str] = set()
         for drone_id in list(in_transit.keys()):
             use_transit: DroneInTransit = in_transit[drone_id]
@@ -49,7 +46,8 @@ class Simulator:
                           drone: Drone, turn_movements: list[str],
                           in_transit: dict[str, DroneInTransit],
                           used_connections: list[Connection],
-                          connections: list[Connection]):
+                          connections: list[Connection]) -> None:
+        """Send one drone through the first usable connection it can take."""
 
         for connection in connections:
             other_zone: Zone = connection.other_zone(current_zone.zone_name)
@@ -78,7 +76,8 @@ class Simulator:
     def drone_sender(self, just_arrived: set[str],
                      turn_movements: list[str],
                      in_transit: dict[str, DroneInTransit],
-                     used_connections: list[Connection]):
+                     used_connections: list[Connection]) -> None:
+        """Try to dispatch every drone that is ready to move this turn."""
         for drone in self.drone_list:
             if drone.full_drone_id in just_arrived:
                 continue
@@ -95,11 +94,7 @@ class Simulator:
                                    connections)
 
     def run_simulation(self) -> tuple[int, list[list[str]]]:
-        """
-        The simulator logic that sends drone in a way
-        that makes them reach the end zone in the least
-        possible turns and without conflicts
-        """
+        """Run the turn-by-turn simulation and return the turn log."""
         in_transit: dict[str, DroneInTransit] = {}
         simulation_log: list[list[str]] = []
         try:

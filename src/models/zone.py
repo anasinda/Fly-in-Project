@@ -3,7 +3,7 @@ from src.utils.exceptions import BlockedZoneError
 
 
 class Zone:
-    """Class that generates a zone object for our graph"""
+    """Represent a zone node with capacity, type, and metadata."""
 
     def __init__(
         self,
@@ -13,7 +13,8 @@ class Zone:
         zone_type: ZoneType = ZoneType.NORMAL,
         zone_color: str | None = None,
         zone_capacity: int = 1
-    ):
+    ) -> None:
+        """Initialize coordinates, identity, and zone settings."""
 
         self.x = x
         self.y = y
@@ -48,20 +49,25 @@ class Zone:
         return 1 + self.temp_cost
 
     def increase_zone_cost(self) -> None:
+        """Apply a small temporary cost to the zone."""
         self.temp_cost = 0.1
 
     def decrease_zone_cost(self) -> None:
+        """Reset the temporary cost applied to the zone."""
         self.temp_cost = 0
 
     def check_if_reserved(self) -> bool:
+        """Return whether the zone still has a free reservation slot."""
         if self.is_start or self.is_end:
             return True
         return (self.current_drones + self.reservations) < self.zone_capacity
 
     def check_if_restricted(self) -> bool:
+        """Return whether the zone is restricted."""
         if self.zone_capacity == ZoneType.RESTRICTED:
             return True
         return False
 
-    def __str__(self):
+    def __str__(self) -> str:
+        """Return the zone name."""
         return f"{self.zone_name}"
