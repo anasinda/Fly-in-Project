@@ -7,7 +7,8 @@ class DronePathSetter:
     A class that sets the path that each drone takes
     """
 
-    def __init__(self, paths: list[list[Zone]], drone_list: list[Drone]) -> None:
+    def __init__(self, paths: list[list[Zone]],
+                 drone_list: list[Drone]) -> None:
         """
         Initiliazing class attributes for use
         """

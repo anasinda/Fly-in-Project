@@ -7,6 +7,7 @@ from src.algorithms.multi_pathfinder import MultiPathfinder
 from src.utils.drone_path_setter import DronePathSetter
 from src.algorithms.simulation import Simulator
 from src.display.visualization import Visualizer
+from src.utils.exceptions import NoPathFoundError
 
 
 try:
@@ -23,7 +24,8 @@ try:
     visualization = Visualizer(graph, turns, simulation_log)
     visualization.run()
 except KeyboardInterrupt as k_e:
-    print("Exited program with Ctrl + C")
-except Exception as e:
+    print("\rExited program with Ctrl + C")
+except NoPathFoundError as e:
     print(e)
+    exit(1)
 

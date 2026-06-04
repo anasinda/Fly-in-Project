@@ -40,7 +40,7 @@ class Zone:
             return 1
         elif self.zone_type == ZoneType.RESTRICTED:
             return 2 + self.temp_cost
-        elif self.zone_type ==  ZoneType.PRIORITY:
+        elif self.zone_type == ZoneType.PRIORITY:
             return 0.5 + self.temp_cost
         elif self.zone_type == ZoneType.BLOCKED:
             raise BlockedZoneError("Cannot enter blocked zone:"
@@ -57,6 +57,11 @@ class Zone:
         if self.is_start or self.is_end:
             return True
         return (self.current_drones + self.reservations) < self.zone_capacity
+
+    def check_if_restricted(self) -> bool:
+        if self.zone_capacity == ZoneType.RESTRICTED:
+            return True
+        return False
 
     def __str__(self):
         return f"{self.zone_name}"

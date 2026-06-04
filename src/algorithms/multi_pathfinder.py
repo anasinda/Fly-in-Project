@@ -3,6 +3,7 @@ from src.models.zone import Zone
 from src.utils.exceptions import NoPathFoundError
 from src.algorithms.pathfinding import Pathfinder
 
+
 class MultiPathfinder:
     def __init__(self, graph: Graph, pathfinder: Pathfinder) -> None:
         self.graph = graph
@@ -15,19 +16,18 @@ class MultiPathfinder:
             raise ValueError("Start or end zone not found")
         while True:
             try:
-                current_path = self.pathfinder.run_dijkstra_algo(self.graph.start_zone, self.graph.end_zone)
+                current_path = self.pathfinder.run_dijkstra_algo(
+                    self.graph.start_zone,
+                    self.graph.end_zone)
                 if current_path in self.paths:
                     break
                 self.paths.append(current_path)
                 for zone in current_path:
                     zone.increase_zone_cost()
             except NoPathFoundError:
-                print("HERE")
-                break
+                raise NoPathFoundError("No path to end zone was found")
 
         for path in self.paths:
             for zone in path:
                 zone.decrease_zone_cost()
         return self.paths
-
-

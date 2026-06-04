@@ -61,8 +61,8 @@ class Pathfinder:
         while current is not None:
             try:
                 path.append(self.graph.get_zone(current))
-            except ZoneNotFoundError as get_zone_e_:
-                print(f"Can't get zone to append to path {get_zone_e_}")
+            except ZoneNotFoundError as get_zone_e:
+                print(f"Can't get zone to append to path {get_zone_e}")
                 exit(1)
             current = previous[current]
         path.reverse()

@@ -3,7 +3,6 @@ from src.models.zone import Zone
 from src.models.drone import Drone
 from src.models.connection import Connection
 from src.utils.drone_in_transit import DroneInTransit
-from src.utils.zone_types import ZoneType
 from src.utils.exceptions import SimulationStuckError, ZoneNotFoundError
 
 
@@ -34,7 +33,8 @@ class Simulator:
             self.graph.in_end[key] = value
             self.drone_list.remove(value)
 
-    def check_in_transit(self, turn_movements: list[str], in_transit: dict[str, DroneInTransit]) -> set[str]:
+    def check_in_transit(self, turn_movements: list[str],
+                         in_transit: dict[str, DroneInTransit]) -> set[str]:
         just_arrived: set[str] = set()
         for drone_id in list(in_transit.keys()):
             use_transit: DroneInTransit = in_transit[drone_id]
@@ -45,7 +45,7 @@ class Simulator:
                 del in_transit[drone_id]
         return just_arrived
 
-    def connection_finder(self, current_zone: Zone, next_zone:Zone,
+    def connection_finder(self, current_zone: Zone, next_zone: Zone,
                           drone: Drone, turn_movements: list[str],
                           in_transit: dict[str, DroneInTransit],
                           used_connections: list[Connection],
@@ -56,13 +56,14 @@ class Simulator:
             link_check: bool = connection.check_link_usage()
             drone_cap_check: bool = next_zone.can_accept_drone()
             reserved_check: bool = next_zone.check_if_reserved()
-            restricted_check : ZoneType = next_zone.zone_type
+            restricted_check: bool = next_zone.check_if_restricted()
 
             if other_zone == next_zone:
                 if link_check and drone_cap_check:
                     if reserved_check:
-                        if restricted_check == ZoneType.RESTRICTED:
-                            transit_obj = DroneInTransit(drone, connection, next_zone)
+                        if restricted_check:
+                            transit_obj = DroneInTransit(drone, connection,
+                                                         next_zone)
                             transit_obj.transit_launcher(turn_movements)
                             drone_id: str = drone.full_drone_id
                             in_transit[drone_id] = transit_obj
@@ -74,9 +75,10 @@ class Simulator:
             if drone.current_zone != current_zone:
                 break
 
-
-    def drone_sender(self, just_arrived: set[str], turn_movements: list[str],
-                     in_transit: dict[str, DroneInTransit], used_connections: list[Connection]):
+    def drone_sender(self, just_arrived: set[str],
+                     turn_movements: list[str],
+                     in_transit: dict[str, DroneInTransit],
+                     used_connections: list[Connection]):
         for drone in self.drone_list:
             if drone.full_drone_id in just_arrived:
                 continue
@@ -85,8 +87,12 @@ class Simulator:
             if next_zone is None or current_zone is None:
                 continue
             connections: list[Connection] = []
-            connections = self.graph.get_zone_connections(current_zone.zone_name)
-            self.connection_finder(current_zone, next_zone, drone, turn_movements, in_transit, used_connections, connections)
+            connections = self.graph.get_zone_connections(
+                current_zone.zone_name)
+            self.connection_finder(current_zone, next_zone,
+                                   drone, turn_movements,
+                                   in_transit, used_connections,
+                                   connections)
 
     def run_simulation(self) -> tuple[int, list[list[str]]]:
         """
@@ -105,9 +111,11 @@ class Simulator:
                 # drone turns then printing them at once in one -line
 
                 turn_movements: list[str] = []
-                just_arrived = self.check_in_transit(turn_movements, in_transit)
+                just_arrived = self.check_in_transit(turn_movements,
+                                                     in_transit)
                 used_connections: list[Connection] = []
-                self.drone_sender(just_arrived, turn_movements, in_transit, used_connections)
+                self.drone_sender(just_arrived, turn_movements,
+                                  in_transit, used_connections)
                 self.drone_checker()
                 if not turn_movements and not in_transit:
                     raise SimulationStuckError(
