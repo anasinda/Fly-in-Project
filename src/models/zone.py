@@ -64,7 +64,7 @@ class Zone:
 
     def check_if_restricted(self) -> bool:
         """Return whether the zone is restricted."""
-        if self.zone_capacity == ZoneType.RESTRICTED:
+        if self.zone_type == ZoneType.RESTRICTED:
             return True
         return False
 

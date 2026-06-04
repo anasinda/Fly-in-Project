@@ -1,6 +1,5 @@
 from src.models.zone import Zone
 from src.models.graph import Graph
-from src.models.connection import Connection
 from src.parsing.parser import Parser
 from src.algorithms.pathfinding import Pathfinder
 from src.algorithms.multi_pathfinder import MultiPathfinder
@@ -21,11 +20,12 @@ try:
     drone_path_setter.set_drones_path()
     simulator = Simulator(graph, graph.drones_list)
     simulator_results: tuple[int, list[list[str]]] = simulator.run_simulation()
-    visualization = Visualizer(graph, simulator_results[0], simulator_results[1])
+    visualization = Visualizer(graph,
+                               simulator_results[0],
+                               simulator_results[1])
     visualization.run()
-except KeyboardInterrupt as k_e:
+except KeyboardInterrupt:
     print("\rExited program with Ctrl + C")
 except NoPathFoundError as e:
     print(e)
     exit(1)
-

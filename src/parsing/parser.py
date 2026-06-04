@@ -29,7 +29,7 @@ class Parser:
         self.graph = graph
         self.line_number: int = 0
 
-    def zone_parser(self, line: re.Match | None) -> None:
+    def zone_parser(self, line: re.Match[str] | None) -> None:
         """Parse one zone declaration and add it to the graph."""
         if line is not None:
             zone_placeholder: str = line.group(1)
@@ -130,7 +130,7 @@ class Parser:
                                        f"Zone: {zone.zone_name}")
         self.graph.zones[zone_name] = zone_obj
 
-    def connection_parser(self, line: re.Match | None) -> None:
+    def connection_parser(self, line: re.Match[str] | None) -> None:
         """Parse one connection declaration and add it to the graph."""
         if line is not None:
             zone_a: str = line.group(1)
