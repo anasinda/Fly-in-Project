@@ -2,9 +2,10 @@ from src.models.zone import Zone
 
 
 class Drone:
-    """Class that creates drone object"""
+    """Represent one drone moving through the graph."""
 
     def __init__(self, drone_id: int, current_zone: Zone) -> None:
+        """Initialize the drone identifier, position, and path state."""
         self.drone_id: int = drone_id
         self.full_drone_id: str = "D" + str(drone_id)
         self.current_zone: Zone | None = current_zone
@@ -20,6 +21,7 @@ class Drone:
         self.path_index += 1
 
     def remove_current_zone(self) -> None:
+        """Clear the drone's current zone reference."""
         self.current_zone = None
 
     def has_arrived(self, end_zone: Zone) -> bool:
@@ -35,5 +37,5 @@ class Drone:
         return None
 
     def __str__(self) -> str:
-        """Prints drone id"""
+        """Return the short drone identifier."""
         return f"D{self.drone_id}"

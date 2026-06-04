@@ -7,9 +7,10 @@ from src.utils.exceptions import ZoneNotFoundError
 
 
 class Graph:
-    """Class that creates the graph representaton of the map"""
+    """Represent the parsed map as zones and bidirectional connections."""
 
     def __init__(self) -> None:
+        """Initialize empty graph containers and simulation state."""
         self.zones: dict[str, Zone] = {}
         self.adjacency: defaultdict[str, list[Connection]] = defaultdict(list)
         self.seen_connections: set[frozenset[str]] = set()
@@ -21,10 +22,7 @@ class Graph:
         self.in_end: dict[str, Drone] = {}
 
     def add_zone(self, zone: Zone) -> None:
-        """
-        Add's zone to zones dictionary
-        Also checks for duplicate zones
-        """
+        """Add a zone to the graph and reject duplicate names."""
         if zone.zone_name in self.zones:
             raise DuplicateZoneError(
                 "Found duplicate zone" f"{zone.zone_name} in file..."
@@ -37,11 +35,7 @@ class Graph:
         self.zones[zone.zone_name] = zone
 
     def add_connection(self, connection: Connection) -> None:
-        """
-        Add's connections to adjacency list in
-        a bi-directional way
-        Checks for duplicate connections
-        """
+        """Add a bidirectional connection and reject duplicates."""
         key = frozenset({
             connection.zone_a.zone_name,
             connection.zone_b.zone_name
@@ -56,11 +50,11 @@ class Graph:
         self.adjacency[connection.zone_b.zone_name].append(connection)
 
     def get_zone(self, name: str) -> Zone:
-        """Retrieves zone from zones dictionary if found"""
+        """Return a zone by name."""
         if name not in self.zones:
             raise ZoneNotFoundError(f"Zone {name} not found in graph")
         return self.zones[name]
 
-    def get_zone_connections(self, name: str) -> list[Connection]:
-        """Retrieves connection from adjacency list"""
-        return self.adjacency[name]
+    def get_zone_connections(self, zone: str) -> list[Connection]:
+        """Return every connection attached to a zone."""
+        return self.adjacency[zone]

@@ -9,16 +9,11 @@ import heapq
 
 class Pathfinder:
     def __init__(self, graph: Graph) -> None:
-        """
-        Initializing graph as attribute of pathfinder class
-        """
+        """Store the graph used for path searches."""
         self.graph: Graph = graph
 
     def run_dijkstra_algo(self, start: Zone, end: Zone) -> list[Zone]:
-        """
-        Dijkstra's algorithm for finding the shortest path
-        our drones can take to reach the end/goal zone
-        """
+        """Return the shortest path between two zones using Dijkstra."""
         dist_list: dict[str, float] = {
             zone_name: float("inf") for zone_name in self.graph.zones.keys()
         }
@@ -45,7 +40,7 @@ class Pathfinder:
                           f"{other_zone_e}")
                     exit(1)
                 try:
-                    move_cost: int = other_zone.zone_move_cost()
+                    move_cost: int | float = other_zone.zone_move_cost()
                     new_cost = cost + move_cost
                     if new_cost < dist_list[other_zone.zone_name]:
                         dist_list[other_zone.zone_name] = new_cost
@@ -61,8 +56,8 @@ class Pathfinder:
         while current is not None:
             try:
                 path.append(self.graph.get_zone(current))
-            except ZoneNotFoundError as get_zone_e_:
-                print(f"Can't get zone to append to path {get_zone_e_}")
+            except ZoneNotFoundError as get_zone_e:
+                print(f"Can't get zone to append to path {get_zone_e}")
                 exit(1)
             current = previous[current]
         path.reverse()

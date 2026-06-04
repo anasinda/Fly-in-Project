@@ -31,36 +31,13 @@ class DuplicateConnectionError(Exception):
     pass
 
 
-# class DuplicateDroneCountLineError(Exception):
-#     """
-#     Raised when finding a duplicate drone count
-#     line when parsing file
-#     """
-#     pass
+class SameMetadataError(Exception):
+    """
+    Raised when finding same metadata when
+    parsing file
+    """
 
-
-# class DuplicateStartOrEndZoneError(Exception):
-#     """
-#     Raised when finding a duplicate start or end zone
-#     when parsing file
-#     """
-#     pass
-
-
-# class ZoneTypeError(Exception):
-#     """
-#     Raised when finding a wrong zone_type during
-#     parsing
-#     """
-#     pass
-
-
-# class GraphKeyError(Exception):
-#     """
-#     Raised when finding a metadata that is not
-#     supported during parsing
-#     """
-#     pass
+    pass
 
 
 class NoPathFoundError(Exception):
@@ -105,12 +82,14 @@ class ConnectionError(Exception):
 
     pass
 
+
 class EmptyFileException(Exception):
     """
     Raised when opening an empthy file
     """
 
     pass
+
 
 class DuplicateCoordinates(Exception):
     """

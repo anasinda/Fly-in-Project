@@ -1,6 +1,7 @@
 import os
 import re
 import webcolors
+
 from sys import argv
 from src.models.connection import Connection
 from src.models.drone import Drone
@@ -15,15 +16,21 @@ from src.utils.exceptions import (ParserError,
                                   DuplicateZoneError,
                                   DuplicateConnectionError,
                                   DuplicateCoordinates,
-                                  EmptyFileException)
+                                  EmptyFileException,
+                                  BlockedZoneError,
+                                  SameMetadataError)
 
 
 class Parser:
+    """Parse the input file into graph zones, connections, and drones."""
+
     def __init__(self, graph: Graph) -> None:
+        """Store the target graph and initialize the line counter."""
         self.graph = graph
         self.line_number: int = 0
 
-    def zone_parser(self, line: re.Match | None) -> None:
+    def zone_parser(self, line: re.Match[str] | None) -> None:
+        """Parse one zone declaration and add it to the graph."""
         if line is not None:
             zone_placeholder: str = line.group(1)
             zone_name: str = line.group(2)
@@ -46,6 +53,8 @@ class Parser:
             metadata = re.sub(r"\s+=\s+", "=", metadata).strip()
             split_metadata: list[str] = metadata.split()
             store_metadata: dict[str, str] = {}
+            seen_metadata: dict[str, int] = {}
+
             for data in split_metadata:
                 if "=" not in data:
                     raise MetadataError(f"Line {self.line_number} :"
@@ -54,10 +63,16 @@ class Parser:
                 try:
                     key, value = map(str.strip, [key, value])
                     ZoneKeys(key)
+                    seen_metadata[key] = seen_metadata.get(key, 0) + 1
                     store_metadata[key] = value.strip()
+                    if seen_metadata[key] > 1:
+                        raise SameMetadataError
                 except ValueError:
-                    raise ParserError(f"Line {self.line_number} :"
+                    raise ParserError(f"Line {self.line_number} ---> "
                                       f"Invalid key: {key}")
+                except SameMetadataError:
+                    raise ParserError(f"Line {self.line_number} ---> "
+                                      f"Invalid syntax: [{metadata}]")
 
             for key, item in store_metadata.items():
                 if key == ZoneKeys.ZONE.value:
@@ -85,15 +100,23 @@ class Parser:
                         raise ParserError(f"Line {self.line_number} :"
                                           f"Invalid value: {max_e}")
         zone_obj = Zone(x, y, zone_name, zone_type, zone_color, zone_capacity)
-
         if zone_check:
             setattr(zone_obj, zone_check, True)
+
+        try:
+            if zone_obj.is_start or zone_obj.is_end:
+                if zone_obj.zone_type == ZoneType.BLOCKED:
+                    raise BlockedZoneError
+        except BlockedZoneError:
+            raise BlockedZoneError(f"{zone_obj.zone_name}"
+                                   " zone can't be blocked")
 
         try:
             self.graph.add_zone(zone_obj)
         except DuplicateZoneError:
             raise DuplicateZoneError(f"Line {self.line_number}: "
-                                     f"Found duplicate zone {zone_obj.zone_name}")
+                                     "Found duplicate zone "
+                                     f"{zone_obj.zone_name}")
 
         try:
             for zone in self.graph.zones.values():
@@ -102,11 +125,13 @@ class Parser:
                         raise DuplicateCoordinates
         except DuplicateCoordinates:
             raise DuplicateCoordinates(f"Line :{self.line_number} "
-                                       f"Found duplicate coordinates x: {x} y: {y}\n"
+                                       "Found duplicate coordinates x: "
+                                       f"{x} y: {y}\n"
                                        f"Zone: {zone.zone_name}")
         self.graph.zones[zone_name] = zone_obj
 
-    def connection_parser(self, line: re.Match | None) -> None:
+    def connection_parser(self, line: re.Match[str] | None) -> None:
+        """Parse one connection declaration and add it to the graph."""
         if line is not None:
             zone_a: str = line.group(1)
             zone_b: str = line.group(2)
@@ -120,8 +145,12 @@ class Parser:
             raise ConnectionError(f"Line {self.line_number}: "
                                   f"{zone_a} and {zone_b} are the same zone")
 
-
         if metadata:
+            print("THis is metadata:", metadata)
+            metadata = re.sub(r"\s+", " ", metadata).strip()
+            metadata = re.sub(r"\s+=", "=", metadata).strip()
+            metadata = re.sub(r"=\s+", "=", metadata).strip()
+            metadata = re.sub(r"\s+=\s+", "=", metadata).strip()
             key, value = metadata.split("=", 1)
             try:
                 key, value = map(str.strip, [key, value])
@@ -148,7 +177,8 @@ class Parser:
             raise DuplicateConnectionError(f"Line {self.line_number}: "
                                            "Found duplicate connection")
 
-    def drone_setter(self, graph: Graph, start_zone) -> None:
+    def drone_setter(self, graph: Graph, start_zone: Zone) -> None:
+        """Create the drones that start at the graph's starting zone."""
         for drone_id in range(1, graph.nb_drones_count + 1):
             drone_obj = Drone(drone_id, start_zone)
             if graph.start_zone is not None:
@@ -156,6 +186,7 @@ class Parser:
             graph.drones_list.append(drone_obj)
 
     def run_parser(self) -> None:
+        """Read the input file and populate the graph."""
         nb_drones_re = re.compile(r"^nb_drones:\s+(-?\d+)$")
         zone_re = re.compile(
             r"^(start_hub|end_hub|hub):\s+"
@@ -167,7 +198,7 @@ class Parser:
         connection_re = re.compile(
             r"^connection:\s+"
             r"(\w+)-(\w+)"
-            r"(?:\s+\[(\w+=\d+)\])?$"
+            r"(?:\s+\[(\s*\w+\s*=\s*\d+\s*)\])?$"
         )
 
         try:
@@ -182,7 +213,8 @@ class Parser:
                             if not line or line.startswith("#"):
                                 continue
                             elif res := nb_drones_re.match(line):
-                                if int(res.group(1)) <= 0 or int(res.group(1)) > 10000:
+                                value: int = int(res.group(1))
+                                if value <= 0 or value > 10000:
                                     raise ParserError(
                                         f"Line {self.line_number}: "
                                         f"Invalid number: {res.group(1)}")
@@ -204,7 +236,8 @@ class Parser:
                         DuplicateZoneError,
                         DuplicateCoordinates,
                         ConnectionError,
-                        EmptyFileException
+                        EmptyFileException,
+                        BlockedZoneError
                     ) as p_error:
                         print(f"[PARSING ERROR] {p_error}")
                         exit(1)

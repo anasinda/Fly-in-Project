@@ -6,5 +6,6 @@ class ZoneKeys(Enum):
     COLOR = "color"
     MAX_DRONES = "max_drones"
 
+
 class ConnectionKeys(Enum):
     MAX_LINK_CAPACITY = "max_link_capacity"
