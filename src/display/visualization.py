@@ -12,7 +12,7 @@ class Visualizer:
         self.graph = graph
         self.turns = turns
         self.current_turn: int = 0
-        self.simualtion_log = simulation_log
+        self.simulation_log = simulation_log
         self.fig, self.ax = plt.subplots(figsize=(19.2, 10.8))
         self.fig.canvas.mpl_connect('key_press_event', self.on_key)
 
@@ -39,7 +39,7 @@ class Visualizer:
     def draw_drones(self) -> None:
         """Draw drone markers for the current turn."""
         if self.current_turn < self.turns:
-            turn_moves = self.simualtion_log[self.current_turn]
+            turn_moves = self.simulation_log[self.current_turn]
             seen: dict[str, int] = {}
             for move in turn_moves:
                 parts = move.split('-')
@@ -53,15 +53,15 @@ class Visualizer:
                     if zone:
                         self.ax.scatter((zone.x + offset),
                                         zone.y,
-                                        s=100,
-                                        color='gray')
+                                        s=400,
+                                        color='gray', zorder=4)
                         self.ax.text((zone.x + offset),
                                      (zone.y + 0.4),
                                      drone_id,
                                      ha='center',
                                      va='top',
-                                     fontsize=10,
-                                     color='gray')
+                                     fontsize=14,
+                                     color='gray', zorder=5)
                 elif len(parts) == 3:
                     zone_a = self.graph.get_zone(parts[1])
                     zone_b = self.graph.get_zone(parts[2])
@@ -70,14 +70,14 @@ class Visualizer:
                         mid_y = (zone_a.y + zone_b.y) / 2
                         self.ax.scatter((mid_x + offset),
                                         mid_y,
-                                        s=100,
+                                        s=400,
                                         color='gray')
                         self.ax.text((mid_x + offset),
                                      (mid_y + 0.4),
                                      drone_id,
                                      ha='center',
                                      va='top',
-                                     fontsize=10,
+                                     fontsize=14,
                                      color='gray')
         self.ax.text(0.0020,
                      0.0040,
@@ -93,20 +93,22 @@ class Visualizer:
             for connection in connections:
                 x = [connection.zone_a.x, connection.zone_b.x]
                 y = [connection.zone_a.y, connection.zone_b.y]
-                self.ax.plot(x, y, color='black')
+                self.ax.plot(x, y, color='black', zorder=1)
 
         for zone in self.graph.zones.values():
             self.ax.scatter(zone.x,
                             zone.y,
-                            s=800,
-                            color=zone.zone_color)
+                            s=1500,
+                            color=zone.zone_color, zorder=2)
             self.ax.text(zone.x,
                          zone.y,
                          zone.zone_name,
                          ha='center',
-                         va='center')
-        self.ax.set_aspect('equal')
-        self.fig.canvas.draw()
+                         va='center', zorder=3)
+        all_y = [zone.y for zone in self.graph.zones.values()]
+        min_y = min(all_y) - 1
+        max_y = max(all_y) + 1
+        self.ax.set_ylim(min_y, max_y)
 
     def run(self) -> None:
         """Open the visualization window."""
