@@ -22,11 +22,11 @@ clean:
 	find . -type f -name "*.pyc" -delete
 
 lint:
-	flake8 *.py
-	mypy *.py --warn-return-any --warn-unused-ignores --ignore-missing-imports --disallow-untyped-defs --check-untyped-defs
+	flake8 *.py src
+	mypy *.py src --warn-return-any --warn-unused-ignores --ignore-missing-imports --disallow-untyped-defs --check-untyped-defs
 
 lint-strict:
-	flake8 *.py
-	mypy *.py --strict
+	flake8 *.py src
+	mypy *.py  src --strict
 
 .PHONY: all install run debug venv clean lint lint-strict
