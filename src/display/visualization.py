@@ -25,6 +25,8 @@ class Visualizer:
                 self.draw_graph()
                 self.draw_drones()
                 self.current_turn += 1
+            elif self.current_turn == self.turns:
+                plt.close()
         elif event.key == 'left':
             if self.current_turn > 0:
                 self.current_turn -= 1
@@ -35,6 +37,9 @@ class Visualizer:
         elif event.key == 'enter':
             self.current_turn = 0
             self.draw_graph()
+        elif event.key == 'escape':
+            self.current_turn = 0
+            plt.close()
 
     def draw_drones(self) -> None:
         """Draw drone markers for the current turn."""
@@ -109,6 +114,7 @@ class Visualizer:
         min_y = min(all_y) - 1
         max_y = max(all_y) + 1
         self.ax.set_ylim(min_y, max_y)
+        self.fig.canvas.draw()
 
     def run(self) -> None:
         """Open the visualization window."""
