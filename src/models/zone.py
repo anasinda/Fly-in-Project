@@ -12,7 +12,7 @@ class Zone:
         zone_name: str,
         zone_type: ZoneType = ZoneType.NORMAL,
         zone_color: str | None = None,
-        zone_capacity: int = 1
+        zone_capacity: int | float = 1
     ) -> None:
         """Initialize coordinates, identity, and zone settings."""
 

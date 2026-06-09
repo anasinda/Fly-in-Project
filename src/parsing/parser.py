@@ -102,6 +102,7 @@ class Parser:
         zone_obj = Zone(x, y, zone_name, zone_type, zone_color, zone_capacity)
         if zone_check:
             setattr(zone_obj, zone_check, True)
+            setattr(zone_obj, 'zone_capacity', float('inf'))
 
         try:
             if zone_obj.is_start or zone_obj.is_end:
@@ -146,7 +147,6 @@ class Parser:
                                   f"{zone_a} and {zone_b} are the same zone")
 
         if metadata:
-            print("THis is metadata:", metadata)
             metadata = re.sub(r"\s+", " ", metadata).strip()
             metadata = re.sub(r"\s+=", "=", metadata).strip()
             metadata = re.sub(r"=\s+", "=", metadata).strip()
