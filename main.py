@@ -20,6 +20,7 @@ try:
     drone_path_setter.set_drones_path()
     simulator = Simulator(graph, graph.drones_list)
     simulator_results: tuple[int, list[list[str]]] = simulator.run_simulation()
+    print("Total Turns:", simulator_results[0])
     visualization = Visualizer(graph,
                                simulator_results[0],
                                simulator_results[1])

@@ -99,12 +99,6 @@ class Simulator:
         simulation_log: list[list[str]] = []
         try:
             while self.drone_list:
-                # in-transit drones are drones that are going to
-                # restricted zones, just arrived for drones that
-                # are in restricted zone now, so we don't check them
-                # later in the 2nd loop, turn_movements is for storing all
-                # drone turns then printing them at once in one -line
-
                 turn_movements: list[str] = []
                 just_arrived = self.check_in_transit(turn_movements,
                                                      in_transit)
@@ -124,5 +118,4 @@ class Simulator:
         except (SimulationStuckError, ZoneNotFoundError) as sim_e:
             print(f"[SIMULATION ERROR] {sim_e}")
             exit(1)
-            # print("len of drone_list: ", self.drone_list)
         return self.turns, simulation_log

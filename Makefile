@@ -16,6 +16,9 @@ debug:
 venv:
 	$(PYTHON) -m venv .venv
 
+del-venv:
+	rm -rf .venv
+
 clean:
 	find . -type d -name ".mypy_cache" -exec rm -rf {} +
 	find . -type d -name "__pycache__" -exec rm -rf {} +
